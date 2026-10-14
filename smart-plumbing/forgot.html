@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Forgot Password — Smart Plumbing</title>
+<style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        background:
+            radial-gradient(circle at 15% 20%, rgba(20, 102, 173, 0.15), transparent 45%),
+            radial-gradient(circle at 85% 80%, rgba(20, 184, 166, 0.15), transparent 45%),
+            linear-gradient(135deg, #e8f0fa 0%, #f4f8fc 100%);
+        overflow: hidden;
+        position: relative;
+    }
+
+    body::before, body::after {
+        content: '';
+        position: absolute;
+        border-radius: 50%;
+        background: linear-gradient(135deg, rgba(20,102,173,0.10), rgba(20,184,166,0.10));
+        animation: float 12s ease-in-out infinite;
+    }
+    body::before { width: 260px; height: 260px; top: -80px; left: -80px; }
+    body::after  { width: 340px; height: 340px; bottom: -120px; right: -120px; animation-delay: 3s; }
+
+    @keyframes float {
+        0%, 100% { transform: translate(0, 0) scale(1); }
+        50%      { transform: translate(30px, -20px) scale(1.08); }
+    }
+
+    .forgot-box {
+        position: relative;
+        z-index: 1;
+        background: rgba(255, 255, 255, 0.92);
+        backdrop-filter: blur(14px);
+        padding: 44px 38px;
+        border-radius: 20px;
+        box-shadow:
+            0 10px 40px rgba(20, 102, 173, 0.12),
+            0 2px 8px rgba(0, 0, 0, 0.04);
+        width: 100%;
+        max-width: 420px;
+        border: 1px solid rgba(255, 255, 255, 0.6);
+        animation: rise 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @keyframes rise {
+        from { opacity: 0; transform: translateY(20px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .logo-badge {
+        width: 56px;
+        height: 56px;
+        margin: 0 auto 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #1466ad 0%, #1e7fd1 100%);
+        border-radius: 16px;
+        font-size: 28px;
+        box-shadow: 0 6px 18px rgba(20, 102, 173, 0.35);
+        transition: all 0.3s ease;
+    }
+    .logo-badge.success {
+        background: linear-gradient(135deg, #10b981 0%, #14b8a6 100%);
+        box-shadow: 0 6px 18px rgba(16, 185, 129, 0.4);
+    }
+
+    h1 {
+        font-size: 24px;
+        color: #0f172a;
+        text-align: center;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        margin-bottom: 8px;
+    }
+
+    .subtitle {
+        text-align: center;
+        color: #64748b;
+        font-size: 14px;
+        margin-bottom: 26px;
+        line-height: 1.5;
+    }
+
+    label {
+        display: block;
+        font-size: 13px;
+        font-weight: 600;
+        color: #334155;
+        margin-bottom: 6px;
+        margin-top: 14px;
+    }
+    label:first-of-type { margin-top: 0; }
+
+    .input-wrap { position: relative; }
+
+    .input-wrap .icon {
+        position: absolute;
+        left: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 15px;
+        opacity: 0.55;
+        pointer-events: none;
+    }
+
+    input {
+        width: 100%;
+        padding: 12px 14px 12px 42px;
+        border: 1.5px solid #e2e8f0;
+        background: #f8fafc;
+        border-radius: 10px;
+        font-size: 14px;
+        color: #0f172a;
+        transition: all 0.2s ease;
+        font-family: inherit;
+    }
+
+    input:focus {
+        outline: none;
+        border-color: #1466ad;
+        background: #fff;
+        box-shadow: 0 0 0 4px rgba(20, 102, 173, 0.10);
+    }
+
+    input::placeholder { color: #94a3b8; }
+
+    input:disabled {
+        background: #f1f5f9;
+        color: #64748b;
+        cursor: not-allowed;
+    }
+
+    button {
+        width: 100%;
+        background: linear-gradient(135deg, #1466ad 0%, #1e7fd1 100%);
+        color: #fff;
+        padding: 13px;
+        border: none;
+        border-radius: 10px;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        margin-top: 22px;
+        box-shadow: 0 6px 16px rgba(20, 102, 173, 0.28);
+        transition: all 0.2s ease;
+        letter-spacing: 0.02em;
+        font-family: inherit;
+    }
+
+    button:hover:not(:disabled) {
+        transform: translateY(-1px);
+        box-shadow: 0 10px 22px rgba(20, 102, 173, 0.36);
+    }
+
+    button:active { transform: translateY(0); }
+
+    button:disabled {
+        opacity: 0.55;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    .msg {
+        font-size: 13px;
+        text-align: center;
+        margin-top: 12px;
+        min-height: 18px;
+    }
+    .msg.error   { color: #ef4444; }
+    .msg.success { color: #10b981; }
+    .msg.info    { color: #64748b; }
+
+    .divider {
+        display: flex;
+        align-items: center;
+        margin: 24px 0 18px;
+    }
+    .divider::before,
+    .divider::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: #e2e8f0;
+    }
+    .divider span { padding: 0 12px; color: #94a3b8; font-size: 12px; }
+
+    .bottom-text {
+        text-align: center;
+        font-size: 14px;
+        color: #64748b;
+    }
+    .bottom-text a {
+        color: #1466ad;
+        text-decoration: none;
+        font-weight: 600;
+    }
+    .bottom-text a:hover { text-decoration: underline; }
+
+    /* Hidden by default — shown only after email verified */
+    .hidden { display: none !important; }
+
+    /* Success screen */
+    .success-screen {
+        text-align: center;
+        animation: rise 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .success-check {
+        width: 84px;
+        height: 84px;
+        margin: 0 auto 22px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.6rem;
+        color: #10b981;
+        box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
+        animation: pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both;
+    }
+    @keyframes pop {
+        from { transform: scale(0.3); opacity: 0; }
+        to   { transform: scale(1); opacity: 1; }
+    }
+
+    .success-screen h2 {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: #0f172a;
+        margin-bottom: 10px;
+    }
+    .success-screen p {
+        font-size: 0.92rem;
+        color: #64748b;
+        margin-bottom: 22px;
+        line-height: 1.55;
+    }
+
+    .spinner {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        border: 2px solid rgba(255,255,255,0.4);
+        border-top-color: #fff;
+        border-radius: 50%;
+        animation: spin 0.7s linear infinite;
+        vertical-align: middle;
+        margin-right: 6px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<div class="forgot-box">
+
+    <!-- ============ STEP 1: Email input ============ -->
+    <div id="stepEmail">
+        <div class="logo-badge" id="logoBadge">🔑</div>
+        <h1>Forgot Password?</h1>
+        <p class="subtitle">Enter your registered email and<br>we'll let you reset your password.</p>
+
+        <form id="emailForm">
+            <label>Email Address</label>
+            <div class="input-wrap">
+                <span class="icon">✉️</span>
+                <input type="email" id="resetEmail" required placeholder="you@example.com" autocomplete="email">
+            </div>
+
+            <button type="submit" id="emailBtn">Continue</button>
+            <p class="msg" id="emailMsg"></p>
+        </form>
+
+        <div class="divider"><span>OR</span></div>
+
+        <p class="bottom-text">
+            <a href="login.html">← Back to Login</a>
+        </p>
+    </div>
+
+    <!-- ============ STEP 2: New password ============ -->
+    <div id="stepPassword" class="hidden">
+        <div class="logo-badge">🔐</div>
+        <h1>Set New Password</h1>
+        <p class="subtitle">
+            Hello <strong id="resetUserName">friend</strong>!<br>
+            Choose a new password for your account.
+        </p>
+
+        <form id="passwordForm">
+            <label>Email</label>
+            <div class="input-wrap">
+                <span class="icon">✉️</span>
+                <input type="email" id="resetEmailLocked" disabled>
+            </div>
+
+            <label>New Password</label>
+            <div class="input-wrap">
+                <span class="icon">🔒</span>
+                <input type="password" id="newPassword" required minlength="6"
+                       placeholder="At least 6 characters" autocomplete="new-password">
+            </div>
+
+            <label>Confirm New Password</label>
+            <div class="input-wrap">
+                <span class="icon">🔒</span>
+                <input type="password" id="confirmPassword" required minlength="6"
+                       placeholder="Re-enter your password" autocomplete="new-password">
+            </div>
+
+            <button type="submit" id="passwordBtn">Reset Password</button>
+            <p class="msg" id="passwordMsg"></p>
+        </form>
+
+        <div class="divider"><span>OR</span></div>
+
+        <p class="bottom-text">
+            <a href="#" id="changeEmailLink">← Change email</a>
+        </p>
+    </div>
+
+    <!-- ============ STEP 3: Success ============ -->
+    <div id="stepSuccess" class="hidden">
+        <div class="success-screen">
+            <div class="success-check">✓</div>
+            <h2>Password Reset!</h2>
+            <p>
+                Your new password has been saved.<br>
+                Redirecting you to login<span class="ai-dots">...</span>
+            </p>
+            <a href="login.html" style="display:inline-block;padding:12px 28px;background:linear-gradient(135deg,#1466ad,#1e7fd1);color:#fff;text-decoration:none;border-radius:10px;font-weight:600;font-size:0.92rem;box-shadow:0 6px 16px rgba(20,102,173,0.28);">
+                Go to Login →
+            </a>
+        </div>
+    </div>
+
+</div>
+
+<script>
+/* ============================================
+   HELPERS
+   ============================================ */
+async function api(endpoint, options = {}) {
+    const res = await fetch(endpoint, { credentials: 'same-origin', ...options });
+    try { return await res.json(); }
+    catch { return { success: false, message: 'Invalid server response' }; }
+}
+
+function showMsg(id, text, type) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.textContent = text;
+    el.className = 'msg ' + (type || '');
+}
+
+/* ============================================
+   STEP 1 — Check email is registered
+   ============================================ */
+document.getElementById('emailForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('resetEmail').value.trim();
+    const btn = document.getElementById('emailBtn');
+
+    if (email === '') {
+        showMsg('emailMsg', 'Please enter your email', 'error');
+        return;
+    }
+
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span>Checking...';
+    showMsg('emailMsg', 'Verifying your account...', 'info');
+
+    const body = new URLSearchParams();
+    body.append('email', email);
+
+    const data = await api('auth.php?action=check_email', { method: 'POST', body });
+
+    btn.disabled = false;
+    btn.textContent = 'Continue';
+
+    if (!data.success) {
+        showMsg('emailMsg', data.message || 'Account not found', 'error');
+        return;
+    }
+
+    // Success — move to step 2
+    showMsg('emailMsg', '', '');
+
+    // Fill the locked email field + user greeting
+    document.getElementById('resetEmailLocked').value = email;
+    document.getElementById('resetUserName').textContent = data.name || 'friend';
+
+    // Swap screens
+    document.getElementById('stepEmail').classList.add('hidden');
+    document.getElementById('stepPassword').classList.remove('hidden');
+});
+
+/* ============================================
+   STEP 2 — Set new password
+   ============================================ */
+document.getElementById('passwordForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email   = document.getElementById('resetEmailLocked').value;
+    const pass    = document.getElementById('newPassword').value;
+    const confirm = document.getElementById('confirmPassword').value;
+    const btn     = document.getElementById('passwordBtn');
+
+    if (pass.length < 6) {
+        showMsg('passwordMsg', 'Password must be at least 6 characters', 'error');
+        return;
+    }
+    if (pass !== confirm) {
+        showMsg('passwordMsg', 'Passwords do not match', 'error');
+        return;
+    }
+
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span>Resetting...';
+    showMsg('passwordMsg', '', '');
+
+    const body = new URLSearchParams();
+    body.append('email', email);
+    body.append('password', pass);
+    body.append('confirm', confirm);
+
+    const data = await api('auth.php?action=reset_password', { method: 'POST', body });
+
+    btn.disabled = false;
+    btn.textContent = 'Reset Password';
+
+    if (!data.success) {
+        showMsg('passwordMsg', data.message || 'Reset failed', 'error');
+        return;
+    }
+
+    // Success — go to step 3
+    document.getElementById('stepPassword').classList.add('hidden');
+    document.getElementById('stepSuccess').classList.remove('hidden');
+
+    // Auto-redirect to login after 3 seconds
+    setTimeout(() => {
+        window.location.href = 'login.html';
+    }, 3000);
+});
+
+/* ============================================
+   Change email link — go back to step 1
+   ============================================ */
+document.getElementById('changeEmailLink').addEventListener('click', (e) => {
+    e.preventDefault();
+    document.getElementById('stepPassword').classList.add('hidden');
+    document.getElementById('stepEmail').classList.remove('hidden');
+    document.getElementById('emailForm').reset();
+    document.getElementById('passwordForm').reset();
+    showMsg('emailMsg', '', '');
+    showMsg('passwordMsg', '', '');
+});
+</script>
+
+<style>
+    .ai-dots::after {
+        content: '';
+        animation: aiDots 1.5s steps(4, end) infinite;
+    }
+    @keyframes aiDots {
+        0%   { content: ''; }
+        25%  { content: '.'; }
+        50%  { content: '..'; }
+        75%  { content: '...'; }
+        100% { content: ''; }
+    }
+</style>
+
+</body>
+</html>

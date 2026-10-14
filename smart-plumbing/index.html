@@ -1,0 +1,1313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Plumbing — AI-Matched Plumbers, Paid via M-Pesa</title>
+<style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+        --brand-900: #062a4a;
+        --brand-800: #0a3d6b;
+        --brand-700: #0e4f8a;
+        --brand-600: #1466ad;
+        --brand-500: #1e7fd1;
+        --accent:    #14b8a6;
+        --accent-600:#0d9488;
+        --ink:       #0f172a;
+        --muted:     #64748b;
+        --line:      #e2e8f0;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+        background: #f4f7fb;
+        color: var(--ink);
+        min-height: 100vh;
+        line-height: 1.6;
+        overflow-x: hidden;
+    }
+
+    /* ============ NAVBAR ============ */
+    .navbar {
+        position: fixed;
+        top: 0; left: 0; right: 0;
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border-bottom: 1px solid rgba(226, 232, 240, 0.6);
+        z-index: 100;
+        padding: 14px 0;
+        transition: all 0.3s ease;
+    }
+    .navbar.scrolled {
+        padding: 10px 0;
+        box-shadow: 0 4px 24px rgba(15, 23, 42, 0.08);
+    }
+    .nav-inner {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 30px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+    }
+    .nav-brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 800;
+        font-size: 1.15rem;
+        color: var(--ink);
+        text-decoration: none;
+        letter-spacing: -0.02em;
+    }
+    .nav-brand .icon {
+        width: 36px; height: 36px;
+        background: linear-gradient(135deg, #1466ad, #14b8a6);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        box-shadow: 0 6px 16px rgba(20, 102, 173, 0.3);
+    }
+    .nav-links {
+        display: flex;
+        gap: 28px;
+        align-items: center;
+    }
+    .nav-links a {
+        color: var(--muted);
+        text-decoration: none;
+        font-size: 0.92rem;
+        font-weight: 500;
+        transition: color 0.2s ease;
+    }
+    .nav-links a:hover { color: var(--brand-600); }
+    .nav-cta {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+    .btn-nav {
+        padding: 9px 18px;
+        border-radius: 8px;
+        font-size: 0.88rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        font-family: inherit;
+        cursor: pointer;
+        border: none;
+    }
+    .btn-nav-ghost {
+        background: transparent;
+        color: var(--ink);
+        border: 1.5px solid var(--line);
+    }
+    .btn-nav-ghost:hover {
+        border-color: var(--brand-500);
+        color: var(--brand-600);
+        transform: translateY(-1px);
+    }
+    .btn-nav-primary {
+        background: linear-gradient(135deg, #1466ad, #1e7fd1);
+        color: #fff;
+        box-shadow: 0 4px 12px rgba(20, 102, 173, 0.28);
+    }
+    .btn-nav-primary:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 8px 20px rgba(20, 102, 173, 0.36);
+    }
+    .mobile-toggle {
+        display: none;
+        background: transparent;
+        border: none;
+        font-size: 1.5rem;
+        color: var(--ink);
+        cursor: pointer;
+    }
+
+    /* ============ HERO ============ */
+    .hero {
+        position: relative;
+        padding: 160px 30px 100px;
+        background:
+            radial-gradient(circle at 15% 20%, rgba(20, 102, 173, 0.18), transparent 45%),
+            radial-gradient(circle at 85% 80%, rgba(20, 184, 166, 0.18), transparent 45%),
+            linear-gradient(135deg, #e8f0fa 0%, #f4f8fc 100%);
+        overflow: hidden;
+    }
+    .hero::before, .hero::after {
+        content: '';
+        position: absolute;
+        border-radius: 50%;
+        background: linear-gradient(135deg, rgba(20,102,173,0.12), rgba(20,184,166,0.12));
+        animation: float 14s ease-in-out infinite;
+        pointer-events: none;
+    }
+    .hero::before { width: 400px; height: 400px; top: -100px; left: -120px; }
+    .hero::after  { width: 500px; height: 500px; bottom: -200px; right: -150px; animation-delay: 4s; }
+
+    @keyframes float {
+        0%, 100% { transform: translate(0, 0) scale(1); }
+        50%      { transform: translate(30px, -20px) scale(1.08); }
+    }
+
+    .hero-inner {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 60px;
+        align-items: center;
+        position: relative;
+        z-index: 1;
+    }
+
+    .hero-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(8px);
+        border: 1px solid rgba(20, 184, 166, 0.2);
+        padding: 7px 14px 7px 8px;
+        border-radius: 999px;
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: var(--accent-600);
+        margin-bottom: 22px;
+        box-shadow: 0 4px 14px rgba(20, 184, 166, 0.12);
+        animation: heroIn 0.7s ease 0.1s both;
+    }
+    .hero-badge .dot {
+        width: 8px; height: 8px;
+        background: #10b981;
+        border-radius: 50%;
+        box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.15);
+        animation: pulseDot 2s ease-in-out infinite;
+    }
+    @keyframes pulseDot {
+        0%, 100% { box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.15); }
+        50%      { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0.05); }
+    }
+
+    .hero h1 {
+        font-size: 3.6rem;
+        font-weight: 800;
+        line-height: 1.1;
+        letter-spacing: -0.03em;
+        color: var(--ink);
+        margin-bottom: 20px;
+        animation: heroIn 0.7s ease 0.2s both;
+    }
+    .hero h1 .gradient {
+        background: linear-gradient(135deg, #1466ad 0%, #14b8a6 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .hero p.lead {
+        font-size: 1.15rem;
+        color: var(--muted);
+        margin-bottom: 32px;
+        max-width: 520px;
+        animation: heroIn 0.7s ease 0.3s both;
+    }
+
+    .hero-cta {
+        display: flex;
+        gap: 14px;
+        flex-wrap: wrap;
+        margin-bottom: 40px;
+        animation: heroIn 0.7s ease 0.4s both;
+    }
+
+    .btn-hero {
+        padding: 15px 30px;
+        border-radius: 12px;
+        font-size: 1rem;
+        font-weight: 700;
+        text-decoration: none;
+        transition: all 0.25s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-family: inherit;
+        cursor: pointer;
+        border: none;
+    }
+    .btn-hero-primary {
+        background: linear-gradient(135deg, #1466ad, #1e7fd1);
+        color: #fff;
+        box-shadow: 0 10px 24px rgba(20, 102, 173, 0.32);
+    }
+    .btn-hero-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 14px 30px rgba(20, 102, 173, 0.42);
+    }
+    .btn-hero-ghost {
+        background: rgba(255, 255, 255, 0.9);
+        color: var(--ink);
+        border: 1.5px solid var(--line);
+    }
+    .btn-hero-ghost:hover {
+        border-color: var(--brand-500);
+        color: var(--brand-600);
+        transform: translateY(-2px);
+        box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+    }
+
+    .hero-trust {
+        display: flex;
+        gap: 28px;
+        flex-wrap: wrap;
+        animation: heroIn 0.7s ease 0.5s both;
+    }
+    .hero-trust-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.88rem;
+        color: var(--muted);
+    }
+    .hero-trust-item .check {
+        width: 20px; height: 20px;
+        border-radius: 50%;
+        background: #d1fae5;
+        color: #10b981;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.7rem;
+        font-weight: 700;
+    }
+
+    @keyframes heroIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ============ HERO ILLUSTRATION ============ */
+    .hero-visual {
+        position: relative;
+        animation: heroIn 0.9s ease 0.3s both;
+    }
+    .hero-mockup {
+        background: #fff;
+        border-radius: 20px;
+        padding: 22px;
+        box-shadow:
+            0 30px 60px rgba(15, 23, 42, 0.15),
+            0 10px 20px rgba(15, 23, 42, 0.08);
+        border: 1px solid rgba(226, 232, 240, 0.8);
+        position: relative;
+        z-index: 1;
+        animation: mockupFloat 6s ease-in-out infinite;
+    }
+    @keyframes mockupFloat {
+        0%, 100% { transform: translateY(0); }
+        50%      { transform: translateY(-12px); }
+    }
+
+    .mockup-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding-bottom: 14px;
+        border-bottom: 1px solid var(--line);
+        margin-bottom: 16px;
+    }
+    .mockup-dots {
+        display: flex;
+        gap: 5px;
+    }
+    .mockup-dots span {
+        width: 10px; height: 10px;
+        border-radius: 50%;
+    }
+    .mockup-dots span:nth-child(1) { background: #ef4444; }
+    .mockup-dots span:nth-child(2) { background: #f59e0b; }
+    .mockup-dots span:nth-child(3) { background: #10b981; }
+    .mockup-title {
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: var(--muted);
+    }
+
+    .mockup-chat {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+    .chat-bubble {
+        padding: 12px 16px;
+        border-radius: 14px;
+        font-size: 0.88rem;
+        max-width: 85%;
+        line-height: 1.5;
+        animation: chatIn 0.5s ease both;
+    }
+    .chat-bubble.user {
+        background: linear-gradient(135deg, #1466ad, #1e7fd1);
+        color: #fff;
+        align-self: flex-end;
+        border-bottom-right-radius: 4px;
+        animation-delay: 0.6s;
+    }
+    .chat-bubble.ai {
+        background: #f1f5f9;
+        color: var(--ink);
+        align-self: flex-start;
+        border-bottom-left-radius: 4px;
+        animation-delay: 1s;
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    .chat-bubble.ai .avatar {
+        width: 24px; height: 24px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #14b8a6, #0d9488);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.7rem;
+        color: #fff;
+        flex-shrink: 0;
+    }
+    .chat-bubble.match {
+        background: linear-gradient(135deg, #ecfdf5, #f0fdfa);
+        border: 1.5px solid #a7f3d0;
+        align-self: flex-start;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        max-width: 90%;
+        animation-delay: 1.6s;
+    }
+    .chat-bubble.match .plumber-avatar {
+        width: 36px; height: 36px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #1466ad, #14b8a6);
+        color: #fff;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+    .chat-bubble.match .info { flex: 1; }
+    .chat-bubble.match .name {
+        font-weight: 700;
+        color: var(--ink);
+        font-size: 0.9rem;
+        margin-bottom: 2px;
+    }
+    .chat-bubble.match .meta {
+        font-size: 0.75rem;
+        color: var(--accent-600);
+        font-weight: 600;
+    }
+    .chat-bubble.match .tick {
+        width: 22px; height: 22px;
+        border-radius: 50%;
+        background: #10b981;
+        color: #fff;
+        font-size: 0.75rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+    }
+
+    @keyframes chatIn {
+        from { opacity: 0; transform: translateY(12px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Floating decorations */
+    .float-card {
+        position: absolute;
+        background: #fff;
+        border-radius: 14px;
+        padding: 12px 16px;
+        box-shadow: 0 12px 30px rgba(15, 23, 42, 0.12);
+        border: 1px solid rgba(226, 232, 240, 0.8);
+        z-index: 2;
+        animation: cardFloat 5s ease-in-out infinite;
+    }
+    .float-card.payment {
+        top: 20px; right: -20px;
+        animation-delay: 0.5s;
+    }
+    .float-card.rating {
+        bottom: 40px; left: -30px;
+        animation-delay: 1.5s;
+    }
+    @keyframes cardFloat {
+        0%, 100% { transform: translateY(0); }
+        50%      { transform: translateY(-10px); }
+    }
+
+    .float-label {
+        font-size: 0.7rem;
+        color: var(--muted);
+        text-transform: uppercase;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        margin-bottom: 4px;
+    }
+    .float-value {
+        font-size: 1.05rem;
+        font-weight: 800;
+        color: var(--ink);
+    }
+    .float-value.green { color: var(--accent-600); }
+    .float-stars {
+        color: #f59e0b;
+        font-size: 0.95rem;
+        letter-spacing: 2px;
+    }
+
+    /* ============ SECTIONS ============ */
+    .section {
+        padding: 100px 30px;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    .section-head {
+        text-align: center;
+        max-width: 700px;
+        margin: 0 auto 60px;
+    }
+    .section-tag {
+        display: inline-block;
+        background: rgba(20, 184, 166, 0.1);
+        color: var(--accent-600);
+        padding: 6px 14px;
+        border-radius: 999px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        margin-bottom: 16px;
+    }
+    .section h2 {
+        font-size: 2.4rem;
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        line-height: 1.15;
+        margin-bottom: 16px;
+    }
+    .section-head p {
+        font-size: 1.05rem;
+        color: var(--muted);
+    }
+
+    /* ============ FEATURES GRID ============ */
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 24px;
+    }
+    .feature-card {
+        background: #fff;
+        border-radius: 18px;
+        padding: 32px 28px;
+        border: 1px solid var(--line);
+        box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    .feature-card::before {
+        content: '';
+        position: absolute;
+        inset: 0 auto 0 0;
+        width: 4px;
+        background: linear-gradient(180deg, #1466ad, #14b8a6);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+    .feature-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 20px 40px rgba(15, 23, 42, 0.1);
+        border-color: #cbd5e1;
+    }
+    .feature-card:hover::before { opacity: 1; }
+
+    .feature-icon {
+        width: 56px; height: 56px;
+        border-radius: 14px;
+        background: linear-gradient(135deg, rgba(20, 102, 173, 0.1), rgba(20, 184, 166, 0.1));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 26px;
+        margin-bottom: 20px;
+        border: 1px solid rgba(20, 102, 173, 0.1);
+    }
+    .feature-card h3 {
+        font-size: 1.15rem;
+        font-weight: 700;
+        margin-bottom: 8px;
+        letter-spacing: -0.01em;
+    }
+    .feature-card p {
+        font-size: 0.92rem;
+        color: var(--muted);
+        line-height: 1.6;
+    }
+
+    /* ============ HOW IT WORKS ============ */
+    .how-section {
+        background: linear-gradient(135deg, #f0f9ff 0%, #f0fdfa 100%);
+        padding: 100px 30px;
+    }
+    .how-inner {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    .steps-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 24px;
+        position: relative;
+    }
+    .step {
+        text-align: center;
+        position: relative;
+        z-index: 1;
+    }
+    .step-num {
+        width: 60px; height: 60px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #1466ad, #1e7fd1);
+        color: #fff;
+        font-size: 1.5rem;
+        font-weight: 800;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+        box-shadow: 0 10px 24px rgba(20, 102, 173, 0.28);
+        transition: all 0.3s ease;
+    }
+    .step:hover .step-num {
+        transform: scale(1.1) rotate(-5deg);
+        box-shadow: 0 14px 32px rgba(20, 102, 173, 0.4);
+    }
+    .step:nth-child(2) .step-num { background: linear-gradient(135deg, #0d9488, #14b8a6); box-shadow: 0 10px 24px rgba(20, 184, 166, 0.28); }
+    .step:nth-child(3) .step-num { background: linear-gradient(135deg, #1e7fd1, #14b8a6); }
+    .step:nth-child(4) .step-num { background: linear-gradient(135deg, #0d9488, #10b981); }
+
+    .step h4 {
+        font-size: 1.05rem;
+        font-weight: 700;
+        margin-bottom: 8px;
+        letter-spacing: -0.01em;
+    }
+    .step p {
+        font-size: 0.88rem;
+        color: var(--muted);
+        line-height: 1.55;
+        max-width: 220px;
+        margin: 0 auto;
+    }
+
+    /* ============ STATS ============ */
+    .stats-section {
+        padding: 80px 30px;
+        background: linear-gradient(135deg, #062a4a 0%, #0a3d6b 50%, #0e4f8a 100%);
+        color: #fff;
+        position: relative;
+        overflow: hidden;
+    }
+    .stats-section::before {
+        content: '';
+        position: absolute;
+        width: 500px; height: 500px;
+        background: radial-gradient(circle, rgba(20, 184, 166, 0.25), transparent 70%);
+        top: -200px; right: -100px;
+        pointer-events: none;
+    }
+    .stats-inner {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 30px;
+        position: relative;
+        z-index: 1;
+    }
+    .stat {
+        text-align: center;
+        padding: 20px;
+        border-right: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .stat:last-child { border-right: none; }
+    .stat .num {
+        font-size: 3rem;
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        background: linear-gradient(135deg, #ffffff, #8ec7ee);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 8px;
+    }
+    .stat .label {
+        font-size: 0.9rem;
+        color: rgba(255, 255, 255, 0.75);
+        font-weight: 500;
+    }
+
+    /* ============ TESTIMONIALS ============ */
+    .testimonials-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 24px;
+    }
+    .testimonial {
+        background: #fff;
+        border-radius: 18px;
+        padding: 30px 28px;
+        border: 1px solid var(--line);
+        box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+        transition: all 0.3s ease;
+    }
+    .testimonial:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 20px 40px rgba(15, 23, 42, 0.08);
+    }
+    .testimonial .stars {
+        color: #f59e0b;
+        font-size: 1rem;
+        letter-spacing: 2px;
+        margin-bottom: 14px;
+    }
+    .testimonial p {
+        font-size: 0.95rem;
+        color: #334155;
+        line-height: 1.7;
+        margin-bottom: 20px;
+        font-style: italic;
+    }
+    .testimonial-author {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    .testimonial-author .avatar {
+        width: 42px; height: 42px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #1466ad, #14b8a6);
+        color: #fff;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.95rem;
+    }
+    .testimonial-author .name {
+        font-weight: 700;
+        font-size: 0.92rem;
+        color: var(--ink);
+    }
+    .testimonial-author .role {
+        font-size: 0.78rem;
+        color: var(--muted);
+    }
+
+    /* ============ CTA BANNER ============ */
+    .cta-section {
+        padding: 100px 30px;
+        text-align: center;
+    }
+    .cta-box {
+        max-width: 900px;
+        margin: 0 auto;
+        background: linear-gradient(135deg, #1466ad 0%, #0d9488 100%);
+        border-radius: 28px;
+        padding: 70px 50px;
+        color: #fff;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 30px 60px rgba(20, 102, 173, 0.3);
+    }
+    .cta-box::before {
+        content: '';
+        position: absolute;
+        width: 400px; height: 400px;
+        background: radial-gradient(circle, rgba(255,255,255,0.15), transparent 70%);
+        top: -150px; right: -150px;
+        pointer-events: none;
+    }
+    .cta-box::after {
+        content: '';
+        position: absolute;
+        width: 300px; height: 300px;
+        background: radial-gradient(circle, rgba(20, 184, 166, 0.35), transparent 70%);
+        bottom: -100px; left: -100px;
+        pointer-events: none;
+    }
+    .cta-box h2 {
+        font-size: 2.4rem;
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        margin-bottom: 16px;
+        position: relative;
+        z-index: 1;
+    }
+    .cta-box p {
+        font-size: 1.1rem;
+        opacity: 0.92;
+        max-width: 550px;
+        margin: 0 auto 32px;
+        position: relative;
+        z-index: 1;
+    }
+    .cta-buttons {
+        display: flex;
+        gap: 14px;
+        justify-content: center;
+        flex-wrap: wrap;
+        position: relative;
+        z-index: 1;
+    }
+    .btn-cta {
+        padding: 15px 32px;
+        border-radius: 12px;
+        font-size: 1rem;
+        font-weight: 700;
+        text-decoration: none;
+        transition: all 0.25s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .btn-cta-light {
+        background: #fff;
+        color: var(--brand-600);
+        box-shadow: 0 10px 24px rgba(0, 0, 0, 0.15);
+    }
+    .btn-cta-light:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 14px 32px rgba(0, 0, 0, 0.22);
+    }
+    .btn-cta-outline {
+        background: rgba(255, 255, 255, 0.15);
+        color: #fff;
+        border: 1.5px solid rgba(255, 255, 255, 0.3);
+        backdrop-filter: blur(8px);
+    }
+    .btn-cta-outline:hover {
+        background: rgba(255, 255, 255, 0.25);
+        transform: translateY(-2px);
+    }
+
+    /* ============ FOOTER ============ */
+    .footer {
+        background: #0f172a;
+        color: #94a3b8;
+        padding: 60px 30px 30px;
+    }
+    .footer-inner {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    .footer-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr 1fr;
+        gap: 50px;
+        padding-bottom: 40px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .footer-brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 800;
+        font-size: 1.1rem;
+        color: #fff;
+        margin-bottom: 16px;
+    }
+    .footer-brand .icon {
+        width: 36px; height: 36px;
+        background: linear-gradient(135deg, #1466ad, #14b8a6);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+    }
+    .footer-col h5 {
+        color: #fff;
+        font-size: 0.88rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        margin-bottom: 18px;
+    }
+    .footer-col ul {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+    .footer-col a {
+        color: #94a3b8;
+        text-decoration: none;
+        font-size: 0.9rem;
+        transition: color 0.2s ease;
+    }
+    .footer-col a:hover { color: var(--accent); }
+    .footer-bottom {
+        padding-top: 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 20px;
+        font-size: 0.85rem;
+    }
+    .footer-bottom p { color: #64748b; }
+
+    /* ============ RESPONSIVE ============ */
+    @media (max-width: 1024px) {
+        .hero-inner { grid-template-columns: 1fr; gap: 50px; }
+        .hero-visual { max-width: 480px; margin: 0 auto; }
+        .features-grid { grid-template-columns: repeat(2, 1fr); }
+        .steps-grid { grid-template-columns: repeat(2, 1fr); gap: 40px; }
+        .stats-inner { grid-template-columns: repeat(2, 1fr); }
+        .stat { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 30px; }
+        .stat:nth-child(3), .stat:nth-child(4) { border-bottom: none; padding-bottom: 0; }
+        .testimonials-grid { grid-template-columns: 1fr; }
+        .footer-grid { grid-template-columns: 1fr 1fr; gap: 40px; }
+    }
+
+    @media (max-width: 768px) {
+        .nav-links { display: none; }
+        .nav-links.open {
+            display: flex;
+            position: absolute;
+            top: 100%; left: 0; right: 0;
+            flex-direction: column;
+            background: #fff;
+            padding: 20px 30px;
+            gap: 16px;
+            border-bottom: 1px solid var(--line);
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.1);
+        }
+        .mobile-toggle { display: block; }
+        .nav-cta .btn-nav-ghost { display: none; }
+
+        .hero { padding: 130px 20px 70px; }
+        .hero h1 { font-size: 2.4rem; }
+        .hero p.lead { font-size: 1rem; }
+        .hero-cta { flex-direction: column; width: 100%; }
+        .btn-hero { justify-content: center; width: 100%; }
+
+        .float-card.payment { top: -10px; right: 0; }
+        .float-card.rating { bottom: 10px; left: -10px; }
+
+        .section { padding: 70px 20px; }
+        .section h2 { font-size: 1.8rem; }
+        .features-grid { grid-template-columns: 1fr; }
+        .steps-grid { grid-template-columns: 1fr; gap: 30px; }
+        .stats-inner { grid-template-columns: 1fr; }
+        .stat { border: none; padding-bottom: 20px; }
+        .stat .num { font-size: 2.4rem; }
+
+        .cta-box { padding: 50px 30px; border-radius: 22px; }
+        .cta-box h2 { font-size: 1.7rem; }
+        .cta-buttons { flex-direction: column; }
+        .btn-cta { justify-content: center; width: 100%; }
+
+        .footer-grid { grid-template-columns: 1fr; gap: 30px; }
+        .footer-bottom { flex-direction: column; text-align: center; }
+    }
+
+    /* Reveal on scroll */
+    .reveal {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+</style>
+</head>
+<body>
+
+<!-- ============ NAVBAR ============ -->
+<nav class="navbar" id="navbar">
+    <div class="nav-inner">
+        <a href="#" class="nav-brand">
+            <span class="icon">🔧</span>
+            Smart Plumbing
+        </a>
+        <div class="nav-links" id="navLinks">
+            <a href="#features">Features</a>
+            <a href="#how">How it works</a>
+            <a href="#reviews">Reviews</a>
+        </div>
+        <div class="nav-cta">
+            <a href="login.html" class="btn-nav btn-nav-ghost">Log In</a>
+            <a href="register.html" class="btn-nav btn-nav-primary">Get Started</a>
+            <button class="mobile-toggle" onclick="document.getElementById('navLinks').classList.toggle('open')">☰</button>
+        </div>
+    </div>
+</nav>
+
+<!-- ============ HERO ============ -->
+<section class="hero">
+    <div class="hero-inner">
+        <div>
+            <div class="hero-badge">
+                <span class="dot"></span>
+                AI-Powered Matching · Live Now
+            </div>
+            <h1>
+                Plumbing problems,<br>
+                <span class="gradient">solved in minutes.</span>
+            </h1>
+            <p class="lead">
+                Describe your issue and our AI instantly matches you with the best verified plumber. Pay securely via M-Pesa — only after the plumber accepts.
+            </p>
+
+            <div class="hero-cta">
+                <a href="register.html" class="btn-hero btn-hero-primary">
+                    ✨ Find a Plumber
+                </a>
+                <a href="login.html" class="btn-hero btn-hero-ghost">
+                    I have an account →
+                </a>
+            </div>
+
+            <div class="hero-trust">
+                <div class="hero-trust-item">
+                    <span class="check">✓</span>
+                    Verified plumbers only
+                </div>
+                <div class="hero-trust-item">
+                    <span class="check">✓</span>
+                    Pay after acceptance
+                </div>
+                <div class="hero-trust-item">
+                    <span class="check">✓</span>
+                    M-Pesa secured
+                </div>
+            </div>
+        </div>
+
+        <div class="hero-visual">
+            <div class="hero-mockup">
+                <div class="mockup-header">
+                    <div class="mockup-dots">
+                        <span></span><span></span><span></span>
+                    </div>
+                    <div class="mockup-title">Smart Plumbing · AI Match</div>
+                </div>
+
+                <div class="mockup-chat">
+                    <div class="chat-bubble user">
+                        My kitchen sink is blocked and water keeps backing up 😩
+                    </div>
+                    <div class="chat-bubble ai">
+                        <div class="avatar">AI</div>
+                        <div>Analysing your issue and matching plumbers...</div>
+                    </div>
+                    <div class="chat-bubble match">
+                        <div class="plumber-avatar">P</div>
+                        <div class="info">
+                            <div class="name">Peter Mwangi</div>
+                            <div class="meta">✨ Best match · Expert · Leak & Drainage</div>
+                        </div>
+                        <div class="tick">✓</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="float-card payment">
+                <div class="float-label">Paid via M-Pesa</div>
+                <div class="float-value green">KSh 1,000</div>
+            </div>
+
+            <div class="float-card rating">
+                <div class="float-label">Rated</div>
+                <div class="float-stars">★★★★★</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============ FEATURES ============ -->
+<section class="section" id="features">
+    <div class="section-head reveal">
+        <div class="section-tag">Why Smart Plumbing</div>
+        <h2>Built for trust, speed, and simplicity</h2>
+        <p>No more calling around, no more cash-up-front uncertainty. Everything happens in one place.</p>
+    </div>
+
+    <div class="features-grid">
+        <div class="feature-card reveal">
+            <div class="feature-icon">🤖</div>
+            <h3>AI Plumber Matching</h3>
+            <p>Describe your issue in plain English. Our algorithm scores every available plumber based on specialty, skill level, and past ratings to find your best match.</p>
+        </div>
+
+        <div class="feature-card reveal">
+            <div class="feature-icon">🛡️</div>
+            <h3>Admin-Verified Plumbers</h3>
+            <p>Every plumber on the platform is vetted and registered by our admin team. No random signups — only trusted professionals.</p>
+        </div>
+
+        <div class="feature-card reveal">
+            <div class="feature-icon">📱</div>
+            <h3>M-Pesa STK Push</h3>
+            <p>Pay with a single tap. A prompt lands on your phone, you enter your PIN, and the job proceeds. No cash, no cards, no confusion.</p>
+        </div>
+
+        <div class="feature-card reveal">
+            <div class="feature-icon">⏱️</div>
+            <h3>Real-Time Job Tracking</h3>
+            <p>Watch your job move from pending → accepted → paid → completed on your dashboard, all in real time.</p>
+        </div>
+
+        <div class="feature-card reveal">
+            <div class="feature-icon">⭐</div>
+            <h3>Ratings & Reviews</h3>
+            <p>After each completed job, rate your plumber. Your feedback powers the matching algorithm — helping everyone get better service.</p>
+        </div>
+
+        <div class="feature-card reveal">
+            <div class="feature-icon">💰</div>
+            <h3>Transparent Pricing</h3>
+            <p>Fixed price per job. No hidden fees. Plumbers earn a fair 35% share, and the platform keeps 65% to keep everything running smoothly.</p>
+        </div>
+    </div>
+</section>
+
+<!-- ============ HOW IT WORKS ============ -->
+<section class="how-section" id="how">
+    <div class="how-inner">
+        <div class="section-head reveal">
+            <div class="section-tag">How it works</div>
+            <h2>From issue to fixed in 4 steps</h2>
+            <p>Simple, fast, and stress-free — from the moment you sign up to the moment the job is done.</p>
+        </div>
+
+        <div class="steps-grid">
+            <div class="step reveal">
+                <div class="step-num">1</div>
+                <h4>Describe your issue</h4>
+                <p>Tell us what's wrong and where. Takes 30 seconds.</p>
+            </div>
+            <div class="step reveal">
+                <div class="step-num">2</div>
+                <h4>AI finds your plumber</h4>
+                <p>Our engine scores and ranks the best available plumbers for you.</p>
+            </div>
+            <div class="step reveal">
+                <div class="step-num">3</div>
+                <h4>Pay via M-Pesa</h4>
+                <p>Once a plumber accepts, complete the KSh 1,000 payment securely.</p>
+            </div>
+            <div class="step reveal">
+                <div class="step-num">4</div>
+                <h4>Rate & review</h4>
+                <p>When the job is done, share your experience and help others.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============ STATS ============ -->
+<section class="stats-section">
+    <div class="stats-inner">
+        <div class="stat reveal">
+            <div class="num">500+</div>
+            <div class="label">Jobs Completed</div>
+        </div>
+        <div class="stat reveal">
+            <div class="num">50+</div>
+            <div class="label">Verified Plumbers</div>
+        </div>
+        <div class="stat reveal">
+            <div class="num">4.8★</div>
+            <div class="label">Average Rating</div>
+        </div>
+        <div class="stat reveal">
+            <div class="num">&lt;2h</div>
+            <div class="label">Avg Response Time</div>
+        </div>
+    </div>
+</section>
+
+<!-- ============ TESTIMONIALS ============ -->
+<section class="section" id="reviews">
+    <div class="section-head reveal">
+        <div class="section-tag">Loved by customers</div>
+        <h2>Real stories, real fixes</h2>
+        <p>Hundreds of happy customers across Kenya trust Smart Plumbing for their plumbing needs.</p>
+    </div>
+
+    <div class="testimonials-grid">
+        <div class="testimonial reveal">
+            <div class="stars">★★★★★</div>
+            <p>"My pipe burst at 9 PM and I panicked. Within 20 minutes Smart Plumbing had matched me with a plumber, and by 11 PM the leak was fixed. Absolute lifesaver."</p>
+            <div class="testimonial-author">
+                <div class="avatar">JM</div>
+                <div>
+                    <div class="name">Jane M.</div>
+                    <div class="role">Westlands, Nairobi</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="testimonial reveal">
+            <div class="stars">★★★★★</div>
+            <p>"The M-Pesa payment gave me peace of mind — no cash negotiations, no surprises. Everything was transparent from start to finish."</p>
+            <div class="testimonial-author">
+                <div class="avatar">DK</div>
+                <div>
+                    <div class="name">David K.</div>
+                    <div class="role">Kilimani, Nairobi</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="testimonial reveal">
+            <div class="stars">★★★★★</div>
+            <p>"I've used Smart Plumbing three times now. Each plumber has been professional, on time, and the AI really does find the right person for the job."</p>
+            <div class="testimonial-author">
+                <div class="avatar">AW</div>
+                <div>
+                    <div class="name">Alice W.</div>
+                    <div class="role">Karen, Nairobi</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============ CTA ============ -->
+<section class="cta-section">
+    <div class="cta-box reveal">
+        <h2>Got a plumbing problem right now?</h2>
+        <p>Create your free account and get matched with a verified plumber in under a minute.</p>
+        <div class="cta-buttons">
+            <a href="register.html" class="btn-cta btn-cta-light">
+                ✨ Create Free Account
+            </a>
+            <a href="login.html" class="btn-cta btn-cta-outline">
+                Log In →
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer class="footer">
+    <div class="footer-inner">
+        <div class="footer-grid">
+            <div>
+                <div class="footer-brand">
+                    <span class="icon">🔧</span>
+                    Smart Plumbing
+                </div>
+                <p style="font-size:0.9rem;line-height:1.7;max-width:320px;">
+                    AI-powered plumbing services for Kenya. Verified plumbers, transparent pricing, and secure M-Pesa payments.
+                </p>
+            </div>
+
+            <div class="footer-col">
+                <h5>Platform</h5>
+                <ul>
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#how">How it works</a></li>
+                    <li><a href="#reviews">Reviews</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h5>Account</h5>
+                <ul>
+                    <li><a href="login.html">Log In</a></li>
+                    <li><a href="register.html">Register</a></li>
+                    <li><a href="forgot.html">Reset Password</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h5>Contact</h5>
+                <ul>
+                    <li><a href="mailto:hello@smartplumbing.co.ke">makhanulawrence@gmail.com</a></li>
+                    <li><a href="tel:+254700000000">+254 748820547</a></li>
+                    <li><a href="#">Nairobi, Kenya</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>© 2026 Smart Plumbing. All rights reserved.</p>
+            <p>Built with 🛠️ in Kenya</p>
+        </div>
+    </div>
+</footer>
+
+<script>
+/* ============================================
+   NAVBAR — scroll effect
+   ============================================ */
+const navbar = document.getElementById('navbar');
+window.addEventListener('scroll', () => {
+    if (window.scrollY > 30) {
+        navbar.classList.add('scrolled');
+    } else {
+        navbar.classList.remove('scrolled');
+    }
+});
+
+/* ============================================
+   CLOSE MOBILE MENU ON LINK CLICK
+   ============================================ */
+document.querySelectorAll('.nav-links a').forEach(link => {
+    link.addEventListener('click', () => {
+        document.getElementById('navLinks').classList.remove('open');
+    });
+});
+
+/* ============================================
+   SCROLL REVEAL ANIMATIONS
+   ============================================ */
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, index) => {
+        if (entry.isIntersecting) {
+            setTimeout(() => {
+                entry.target.classList.add('visible');
+            }, index * 80);
+            observer.unobserve(entry.target);
+        }
+    });
+}, {
+    threshold: 0.1,
+    rootMargin: '0px 0px -50px 0px'
+});
+
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Dashboard — Smart Plumbing</title>
+<style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+        --brand-900: #0a2540;
+        --brand-800: #0d3155;
+        --brand-700: #113d6b;
+        --brand-600: #1466ad;
+        --brand-500: #1e7fd1;
+        --brand-400: #4ea3e0;
+        --accent:    #14b8a6;
+        --ink:       #0f172a;
+        --muted:     #64748b;
+        --line:      #e8eef6;
+    }
+
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+        background: #f4f7fb;
+        color: var(--ink);
+        min-height: 100vh;
+    }
+
+    .layout { display: flex; min-height: 100vh; }
+
+    .sidebar {
+        width: 250px;
+        flex-shrink: 0;
+        background: linear-gradient(180deg, #0a2540 0%, #113d6b 55%, #1466ad 100%);
+        color: #fff;
+        padding: 26px 18px 20px;
+        display: flex;
+        flex-direction: column;
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        overflow-y: auto;
+        box-shadow: 4px 0 24px rgba(10, 37, 64, 0.15);
+    }
+    .sidebar::before {
+        content: '';
+        position: absolute;
+        width: 260px; height: 260px;
+        background: radial-gradient(circle, rgba(20, 184, 166, 0.28), transparent 70%);
+        bottom: -100px; left: -80px;
+        pointer-events: none;
+    }
+    .sidebar .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-weight: 700;
+        font-size: 1.05rem;
+        margin-bottom: 30px;
+        padding-bottom: 22px;
+        border-bottom: 1px solid rgba(255,255,255,0.10);
+        position: relative;
+        z-index: 1;
+    }
+    .sidebar .brand .icon {
+        width: 42px; height: 42px;
+        background: linear-gradient(135deg, rgba(255,255,255,0.22), rgba(255,255,255,0.08));
+        border: 1px solid rgba(255,255,255,0.18);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        backdrop-filter: blur(6px);
+    }
+    .sidebar .brand small {
+        display: block;
+        font-weight: 400;
+        font-size: 0.75rem;
+        color: rgba(255,255,255,0.65);
+        margin-top: 2px;
+    }
+
+    .sidebar nav {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        flex: 1;
+        position: relative;
+        z-index: 1;
+    }
+    .sidebar nav .section-label {
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        color: rgba(255,255,255,0.45);
+        text-transform: uppercase;
+        padding: 14px 12px 6px;
+    }
+    .sidebar nav a {
+        color: rgba(255,255,255,0.82);
+        padding: 11px 14px;
+        border-radius: 10px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        position: relative;
+    }
+    .sidebar nav a .ico { font-size: 1.05rem; width: 22px; text-align: center; }
+    .sidebar nav a:hover {
+        background: rgba(255,255,255,0.10);
+        color: #fff;
+        transform: translateX(2px);
+    }
+    .sidebar nav a.active {
+        background: linear-gradient(90deg, rgba(255,255,255,0.20), rgba(255,255,255,0.08));
+        color: #fff;
+        font-weight: 600;
+        box-shadow: inset 3px 0 0 var(--accent);
+    }
+    .sidebar nav a.active::after {
+        content: '';
+        position: absolute;
+        right: 12px;
+        width: 6px; height: 6px;
+        background: var(--accent);
+        border-radius: 50%;
+        box-shadow: 0 0 10px var(--accent);
+    }
+
+    .sidebar .user-chip {
+        margin-top: 20px;
+        padding-top: 18px;
+        border-top: 1px solid rgba(255,255,255,0.10);
+        position: relative;
+        z-index: 1;
+    }
+    .sidebar .user-chip .avatar {
+        width: 38px; height: 38px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--accent), #0d9488);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.95rem;
+        margin-bottom: 10px;
+        box-shadow: 0 4px 12px rgba(20, 184, 166, 0.4);
+    }
+    .sidebar .user-chip strong {
+        display: block;
+        color: #fff;
+        font-size: 0.92rem;
+        margin-bottom: 2px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .sidebar .user-chip .email {
+        font-size: 0.75rem;
+        color: rgba(255,255,255,0.6);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: block;
+    }
+    .sidebar .user-chip button {
+        margin-top: 14px;
+        width: 100%;
+        background: rgba(255,255,255,0.12);
+        color: #fff;
+        border: 1px solid rgba(255,255,255,0.15);
+        padding: 9px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 0.85rem;
+        font-weight: 600;
+        transition: all 0.2s ease;
+    }
+    .sidebar .user-chip button:hover {
+        background: rgba(239, 68, 68, 0.85);
+        border-color: rgba(239, 68, 68, 0.9);
+    }
+
+    .main {
+        flex: 1;
+        padding: 30px 38px 60px;
+        min-width: 0;
+    }
+
+    .greeting {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: linear-gradient(135deg, #ffffff 0%, #f0f8ff 100%);
+        border: 1px solid #e0ecf7;
+        border-radius: 16px;
+        padding: 20px 26px;
+        margin-bottom: 24px;
+        box-shadow: 0 2px 8px rgba(20, 102, 173, 0.06);
+        position: relative;
+        overflow: hidden;
+    }
+    .greeting::before {
+        content: '';
+        position: absolute;
+        width: 160px; height: 160px;
+        background: radial-gradient(circle, rgba(20, 184, 166, 0.14), transparent 70%);
+        top: -60px; right: -40px;
+        pointer-events: none;
+    }
+    .greeting h1 {
+        font-size: 1.35rem;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        color: #0f172a;
+        margin-bottom: 4px;
+    }
+    .greeting h1 span {
+        background: linear-gradient(135deg, #1466ad, #14b8a6);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    .greeting p { color: #64748b; font-size: 0.88rem; }
+    .greeting-date {
+        font-size: 0.85rem;
+        color: #64748b;
+        font-weight: 500;
+        position: relative;
+        z-index: 1;
+    }
+
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 24px;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+    .page-header h1 { font-size: 1.6rem; letter-spacing: -0.02em; }
+    .page-header p { color: var(--muted); font-size: 0.92rem; margin-top: 3px; }
+
+    .tab-content { display: none; }
+    .tab-content.active { display: block; animation: fadeUp 0.35s ease; }
+    @keyframes fadeUp {
+        from { opacity: 0; transform: translateY(8px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 16px;
+        margin-bottom: 26px;
+    }
+    .stat-card {
+        background: #fff;
+        border-radius: 14px;
+        padding: 20px;
+        border: 1px solid var(--line);
+        box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+        transition: all 0.2s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    .stat-card::before {
+        content: '';
+        position: absolute;
+        inset: 0 auto 0 0;
+        width: 4px;
+        background: linear-gradient(180deg, var(--brand-500), var(--accent));
+        opacity: 0;
+        transition: opacity 0.2s ease;
+    }
+    .stat-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+    }
+    .stat-card:hover::before { opacity: 1; }
+    .stat-card .label {
+        font-size: 0.72rem;
+        font-weight: 700;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        margin-bottom: 6px;
+    }
+    .stat-card .value { font-size: 1.75rem; font-weight: 700; color: var(--ink); }
+    .stat-card .value.accent { color: #0d9488; }
+
+    .card {
+        background: #fff;
+        border-radius: 14px;
+        padding: 24px;
+        border: 1px solid var(--line);
+        box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+        margin-bottom: 22px;
+    }
+    .card h2 {
+        font-size: 1.05rem;
+        margin-bottom: 16px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid var(--line);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 9px 16px;
+        border: none;
+        border-radius: 8px;
+        font-family: inherit;
+        font-size: 0.88rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.18s ease;
+    }
+    .btn-primary {
+        background: linear-gradient(135deg, #1466ad 0%, #1e7fd1 100%);
+        color: #fff;
+        box-shadow: 0 4px 12px rgba(20, 102, 173, 0.24);
+    }
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(20, 102, 173, 0.34); }
+
+    .btn-success { background: #10b981; color: #fff; padding: 6px 12px; font-size: 0.8rem; }
+    .btn-success:hover { background: #059669; }
+
+    .btn-danger { background: #ef4444; color: #fff; padding: 6px 12px; font-size: 0.8rem; }
+    .btn-danger:hover { background: #dc2626; }
+
+    .btn-warn { background: #f59e0b; color: #fff; padding: 6px 12px; font-size: 0.8rem; }
+    .btn-warn:hover { background: #d97706; }
+
+    .btn-ghost { background: #f1f5f9; color: #334155; padding: 6px 12px; font-size: 0.8rem; }
+    .btn-ghost:hover { background: #e2e8f0; }
+
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+    th {
+        text-align: left;
+        padding: 11px 12px;
+        font-size: 0.72rem;
+        font-weight: 700;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        border-bottom: 1px solid #e2e8f0;
+        background: #f8fafc;
+    }
+    td { padding: 12px; border-bottom: 1px solid #f1f5f9; color: #334155; vertical-align: middle; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #f8fafc; }
+
+    .badge {
+        display: inline-block;
+        padding: 3px 10px;
+        border-radius: 999px;
+        font-size: 0.72rem;
+        font-weight: 600;
+    }
+    .badge.beginner     { background: #f1f5f9; color: #475569; }
+    .badge.intermediate { background: #dbeafe; color: #1e40af; }
+    .badge.expert       { background: #fef3c7; color: #92400e; }
+    .badge.active       { background: #d1fae5; color: #065f46; }
+    .badge.suspended    { background: #fee2e2; color: #991b1b; }
+    .badge.user         { background: #e0f2fe; color: #075985; }
+    .badge.plumber      { background: #fef3c7; color: #92400e; }
+    .badge.admin        { background: #ede9fe; color: #5b21b6; }
+    .badge.requested    { background: #fef3c7; color: #92400e; }
+    .badge.approved     { background: #dbeafe; color: #1e40af; }
+    .badge.paid         { background: #d1fae5; color: #065f46; }
+    .badge.rejected     { background: #fee2e2; color: #991b1b; }
+
+    .modal-backdrop {
+        position: fixed; inset: 0;
+        background: rgba(15, 23, 42, 0.55);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 999;
+        padding: 20px;
+    }
+    .modal-backdrop.show { display: flex; }
+    .modal {
+        background: #fff;
+        border-radius: 16px;
+        padding: 30px;
+        max-width: 500px;
+        width: 100%;
+        box-shadow: 0 24px 60px rgba(15,23,42,0.25);
+        animation: rise 0.3s ease;
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+    @keyframes rise {
+        from { opacity: 0; transform: translateY(12px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+    .modal h2 { margin-bottom: 18px; font-size: 1.2rem; }
+
+    label {
+        display: block;
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: #334155;
+        margin-bottom: 5px;
+        margin-top: 12px;
+    }
+    input, select, textarea {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1.5px solid #e2e8f0;
+        background: #f8fafc;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        font-family: inherit;
+        color: var(--ink);
+        transition: all 0.2s ease;
+    }
+    input:focus, select:focus, textarea:focus {
+        outline: none;
+        border-color: var(--brand-600);
+        background: #fff;
+        box-shadow: 0 0 0 4px rgba(20, 102, 173, 0.10);
+    }
+    .modal-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 22px;
+        justify-content: flex-end;
+    }
+
+    .toast-wrap {
+        position: fixed;
+        top: 22px;
+        right: 22px;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    .toast {
+        padding: 14px 20px;
+        border-radius: 10px;
+        color: #fff;
+        font-size: 0.9rem;
+        font-weight: 500;
+        box-shadow: 0 10px 24px rgba(15,23,42,0.18);
+        animation: slideIn 0.3s ease;
+        min-width: 240px;
+    }
+    .toast.success { background: #10b981; }
+    .toast.error   { background: #ef4444; }
+    .toast.info    { background: #3b82f6; }
+    @keyframes slideIn {
+        from { opacity: 0; transform: translateX(30px); }
+        to   { opacity: 1; transform: translateX(0); }
+    }
+
+    .empty {
+        padding: 40px 20px;
+        text-align: center;
+        color: #94a3b8;
+        font-size: 0.9rem;
+    }
+    .empty .big { font-size: 2.4rem; margin-bottom: 10px; opacity: 0.5; }
+
+    .wallet-banner {
+        background: linear-gradient(135deg, #0d9488 0%, #14b8a6 100%);
+        color: #fff;
+        border-radius: 16px;
+        padding: 24px 28px;
+        margin-bottom: 22px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 16px;
+        box-shadow: 0 10px 30px rgba(13, 148, 136, 0.25);
+        position: relative;
+        overflow: hidden;
+    }
+    .wallet-banner::before {
+        content: '';
+        position: absolute;
+        width: 220px; height: 220px;
+        background: radial-gradient(circle, rgba(255,255,255,0.18), transparent 70%);
+        top: -80px; right: -60px;
+        pointer-events: none;
+    }
+    .wallet-banner .info { position: relative; z-index: 1; }
+    .wallet-banner .info .label {
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        opacity: 0.85;
+        margin-bottom: 6px;
+    }
+    .wallet-banner .info .amount {
+        font-size: 2rem;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+    }
+    .wallet-banner button {
+        background: #fff;
+        color: #0d9488;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-weight: 700;
+        font-size: 0.92rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        position: relative;
+        z-index: 1;
+        box-shadow: 0 4px 14px rgba(0,0,0,0.12);
+    }
+    .wallet-banner button:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.18);
+    }
+
+    /* ============================================
+       WITHDRAWAL SUCCESS MODAL (creative)
+       ============================================ */
+    .wd-success-backdrop {
+        position: fixed; inset: 0;
+        background: rgba(15, 23, 42, 0.65);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10000;
+        padding: 20px;
+        animation: wdFade 0.25s ease;
+        backdrop-filter: blur(4px);
+    }
+    @keyframes wdFade { from { opacity: 0; } to { opacity: 1; } }
+
+    .wd-success-card {
+        background: #fff;
+        border-radius: 24px;
+        padding: 44px 40px 36px;
+        max-width: 400px;
+        width: 100%;
+        text-align: center;
+        box-shadow: 0 30px 80px rgba(15, 23, 42, 0.35);
+        animation: wdRise 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        position: relative;
+        overflow: hidden;
+    }
+    @keyframes wdRise {
+        from { opacity: 0; transform: translateY(30px) scale(0.92); }
+        to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .wd-ring {
+        width: 120px; height: 120px;
+        margin: 0 auto 24px;
+        position: relative;
+    }
+    .wd-ring svg {
+        width: 100%; height: 100%;
+        transform: rotate(-90deg);
+    }
+    .wd-ring circle {
+        fill: none;
+        stroke-width: 6;
+        stroke-linecap: round;
+    }
+    .wd-ring .bg-circle {
+        stroke: #d1fae5;
+    }
+    .wd-ring .fg-circle {
+        stroke: #10b981;
+        stroke-dasharray: 339;
+        stroke-dashoffset: 339;
+        animation: wdDraw 0.9s ease-out 0.15s forwards;
+    }
+    @keyframes wdDraw {
+        to { stroke-dashoffset: 0; }
+    }
+    .wd-ring .check {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3.4rem;
+        color: #10b981;
+        opacity: 0;
+        animation: wdCheckIn 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) 0.9s forwards;
+    }
+    @keyframes wdCheckIn {
+        from { opacity: 0; transform: scale(0.3); }
+        to   { opacity: 1; transform: scale(1); }
+    }
+
+    .wd-success-card h2 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #0f172a;
+        margin-bottom: 8px;
+        letter-spacing: -0.02em;
+    }
+    .wd-success-card .sub {
+        font-size: 0.92rem;
+        color: #64748b;
+        margin-bottom: 20px;
+    }
+    .wd-amount {
+        font-size: 2.4rem;
+        font-weight: 800;
+        color: #0d9488;
+        letter-spacing: -0.03em;
+        margin-bottom: 6px;
+        background: linear-gradient(135deg, #0d9488, #14b8a6);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    .wd-ref {
+        font-size: 0.78rem;
+        color: #94a3b8;
+        margin-bottom: 22px;
+        font-family: 'Courier New', monospace;
+    }
+    .wd-bar {
+        height: 5px;
+        background: #e2e8f0;
+        border-radius: 999px;
+        overflow: hidden;
+        margin-bottom: 18px;
+    }
+    .wd-bar > div {
+        height: 100%;
+        background: linear-gradient(90deg, #10b981, #14b8a6);
+        border-radius: 999px;
+        animation: wdBar 4s linear forwards;
+        transform-origin: left;
+    }
+    @keyframes wdBar {
+        from { width: 100%; }
+        to   { width: 0%; }
+    }
+    .wd-close-hint {
+        font-size: 0.78rem;
+        color: #cbd5e1;
+    }
+
+    .wd-confetti {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        overflow: hidden;
+    }
+    .wd-confetti span {
+        position: absolute;
+        width: 8px; height: 14px;
+        opacity: 0;
+        animation: wdConfettiFall 2.6s ease-in forwards;
+    }
+    @keyframes wdConfettiFall {
+        0%   { opacity: 1; transform: translateY(-20px) rotate(0deg); }
+        100% { opacity: 0; transform: translateY(400px) rotate(720deg); }
+    }
+
+    @media (max-width: 800px) {
+        .layout { flex-direction: column; }
+        .sidebar {
+            position: relative;
+            width: 100%;
+            height: auto;
+            padding: 16px 16px;
+            flex-direction: column;
+        }
+        .sidebar .brand { margin-bottom: 14px; padding-bottom: 14px; }
+        .sidebar nav { flex-direction: row; flex-wrap: wrap; gap: 6px; }
+        .sidebar nav .section-label { display: none; }
+        .sidebar nav a { padding: 8px 12px; font-size: 0.82rem; }
+        .sidebar .user-chip {
+            margin-top: 14px;
+            padding-top: 14px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .sidebar .user-chip .avatar { margin-bottom: 0; }
+        .sidebar .user-chip button { margin-top: 0; width: auto; padding: 6px 14px; margin-left: auto; }
+        .main { padding: 22px 16px 40px; }
+        .greeting { flex-direction: column; align-items: flex-start; gap: 10px; }
+        .wallet-banner { flex-direction: column; align-items: flex-start; }
+    }
+</style>
+</head>
+<body>
+
+<div class="layout">
+
+    <aside class="sidebar">
+        <div class="brand">
+            <span class="icon">🛡️</span>
+            <div>
+                Admin Panel
+                <small>Smart Plumbing</small>
+            </div>
+        </div>
+
+        <nav>
+            <div class="section-label">Main</div>
+            <a class="nav-link active" data-tab="overview"><span class="ico">📊</span> Overview</a>
+            <a class="nav-link" data-tab="plumbers"><span class="ico">🔧</span> Plumbers</a>
+            <a class="nav-link" data-tab="users"><span class="ico">👥</span> Users</a>
+
+            <div class="section-label">Activity</div>
+            <a class="nav-link" data-tab="jobs"><span class="ico">📋</span> Jobs</a>
+            <a class="nav-link" data-tab="reviews"><span class="ico">⭐</span> Reviews</a>
+            <a class="nav-link" data-tab="withdrawals"><span class="ico">💰</span> Withdrawals</a>
+
+            <div class="section-label">Finance</div>
+            <a class="nav-link" data-tab="mywallet"><span class="ico">💵</span> My Wallet</a>
+        </nav>
+
+        <div class="user-chip">
+            <div class="avatar" id="avatar">A</div>
+            <strong id="adminName">Admin</strong>
+            <span class="email" id="adminEmail">—</span>
+            <button onclick="logout()">Logout</button>
+        </div>
+    </aside>
+
+    <main class="main">
+
+        <div class="greeting">
+            <div>
+                <h1>Hello, <span id="greetName">Admin</span>! 👋</h1>
+                <p>Here's what's happening on your platform today.</p>
+            </div>
+            <div class="greeting-date" id="greetDate">—</div>
+        </div>
+
+        <section class="tab-content active" id="tab-overview">
+            <div class="page-header">
+                <div>
+                    <h1>Overview</h1>
+                    <p>Snapshot of your platform</p>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card"><div class="label">Users</div><div class="value" id="statUsers">—</div></div>
+                <div class="stat-card"><div class="label">Plumbers</div><div class="value" id="statPlumbers">—</div></div>
+                <div class="stat-card"><div class="label">Total Jobs</div><div class="value" id="statJobs">—</div></div>
+                <div class="stat-card"><div class="label">Completed</div><div class="value accent" id="statCompleted">—</div></div>
+                <div class="stat-card"><div class="label">Revenue (KSh)</div><div class="value accent" id="statRevenue">—</div></div>
+                <div class="stat-card"><div class="label">Pending Payouts</div><div class="value" id="statPayouts">—</div></div>
+            </div>
+        </section>
+
+        <section class="tab-content" id="tab-plumbers">
+            <div class="page-header">
+                <div>
+                    <h1>Plumbers</h1>
+                    <p>Manage plumbers, view their wallet, and pay them out</p>
+                </div>
+                <button class="btn btn-primary" onclick="openAddModal()">+ Add Plumber</button>
+            </div>
+
+            <div class="card">
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Level</th>
+                                <th>Specialty</th>
+                                <th>Rating</th>
+                                <th>💵 Wallet Balance</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="plumbersTable"></tbody>
+                    </table>
+                </div>
+                <div class="empty" id="plumbersEmpty" style="display:none">
+                    <div class="big">🔧</div>
+                    No plumbers yet. Click "Add Plumber" to create one.
+                </div>
+            </div>
+        </section>
+
+        <section class="tab-content" id="tab-users">
+            <div class="page-header">
+                <div>
+                    <h1>All Users</h1>
+                    <p>Every account on the platform</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th><th>Name</th><th>Email</th><th>Phone</th><th>Role</th><th>Joined</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTable"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section class="tab-content" id="tab-jobs">
+            <div class="page-header">
+                <div>
+                    <h1>All Jobs</h1>
+                    <p>Every job request on the platform</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th><th>User</th><th>Plumber</th><th>Category</th>
+                                <th>Description</th><th>Status</th><th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody id="jobsTable"></tbody>
+                    </table>
+                </div>
+                <div class="empty" id="jobsEmpty" style="display:none">
+                    <div class="big">📋</div>
+                    No jobs yet.
+                </div>
+            </div>
+        </section>
+
+        <section class="tab-content" id="tab-reviews">
+            <div class="page-header">
+                <div>
+                    <h1>Reviews</h1>
+                    <p>Ratings and comments from users</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th><th>User</th><th>Plumber</th>
+                                <th>Rating</th><th>Comment</th><th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody id="reviewsTable"></tbody>
+                    </table>
+                </div>
+                <div class="empty" id="reviewsEmpty" style="display:none">
+                    <div class="big">⭐</div>
+                    No reviews yet.
+                </div>
+            </div>
+        </section>
+
+        <section class="tab-content" id="tab-withdrawals">
+            <div class="page-header">
+                <div>
+                    <h1>Withdrawals</h1>
+                    <p>Plumber payout history</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th><th>Plumber</th><th>Amount</th>
+                                <th>Status</th><th>Requested</th><th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="withdrawalsTable"></tbody>
+                    </table>
+                </div>
+                <div class="empty" id="withdrawalsEmpty" style="display:none">
+                    <div class="big">💰</div>
+                    No withdrawal requests yet.
+                </div>
+            </div>
+        </section>
+
+        <section class="tab-content" id="tab-mywallet">
+            <div class="page-header">
+                <div>
+                    <h1>My Wallet</h1>
+                    <p>Your admin revenue — 65% of every KSh 10 payment</p>
+                </div>
+            </div>
+
+            <div class="wallet-banner">
+                <div class="info">
+                    <div class="label">Total Revenue Earned</div>
+                    <div class="amount" id="adminWalletBalance">KSh 0.00</div>
+                </div>
+                <button onclick="openAdminWithdrawModal()" id="adminWithdrawBtn">💸 Withdraw</button>
+            </div>
+
+            <div class="card">
+                <h2>Withdrawal History</h2>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminWithdrawalsTable"></tbody>
+                    </table>
+                </div>
+                <div class="empty" id="adminWithdrawalsEmpty" style="display:none">
+                    <div class="big">💵</div>
+                    No withdrawals yet.
+                </div>
+            </div>
+        </section>
+
+    </main>
+</div>
+
+<div class="modal-backdrop" id="plumberModal">
+    <div class="modal">
+        <h2 id="modalTitle">Add Plumber</h2>
+
+        <form id="plumberForm">
+            <input type="hidden" name="id" id="plumberId">
+
+            <label>Full Name</label>
+            <input type="text" name="name" id="pName" required>
+
+            <label>Email</label>
+            <input type="email" name="email" id="pEmail" required>
+
+            <label>Phone</label>
+            <input type="tel" name="phone" id="pPhone" required>
+
+            <label>Level</label>
+            <select name="level" id="pLevel">
+                <option value="beginner">Beginner</option>
+                <option value="intermediate">Intermediate</option>
+                <option value="expert">Expert</option>
+            </select>
+
+            <label>Specialization</label>
+            <select name="specialization" id="pSpec">
+                <option value="general">General</option>
+                <option value="leak">Leak Repair</option>
+                <option value="blockage">Drainage / Blockage</option>
+                <option value="installation">Installation</option>
+                <option value="heater">Water Heater</option>
+            </select>
+
+            <label id="pwdLabel">Password (default: plumber123)</label>
+            <input type="text" name="password" id="pPassword" value="plumber123">
+
+            <div class="modal-actions">
+                <button type="button" class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+                <button type="submit" class="btn btn-primary" id="modalSubmitBtn">Save</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="modal-backdrop" id="withdrawModal">
+    <div class="modal" style="max-width:440px">
+        <h2>Withdraw Funds</h2>
+
+        <div style="background:#f0fdfa;border:1px solid #ccfbf1;border-radius:12px;padding:16px;margin-bottom:16px">
+            <div style="font-size:0.78rem;color:#0d9488;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px">
+                Available Balance
+            </div>
+            <div style="font-size:1.7rem;font-weight:700;color:#0d9488" id="withdrawBalance">
+                KSh 0
+            </div>
+        </div>
+
+        <p style="color:#64748b;font-size:0.88rem;margin-bottom:8px">
+            Paying: <strong id="withdrawPlumberName">Plumber</strong>
+        </p>
+
+        <form id="withdrawForm">
+            <input type="hidden" name="plumber_id" id="withdrawPlumberId">
+
+            <label>Amount to Withdraw (KSh)</label>
+            <input type="number" name="amount" id="withdrawAmount"
+                   min="1" step="1" required placeholder="e.g. 3.50">
+
+            <label>Note (optional)</label>
+            <input type="text" name="note" id="withdrawNote" placeholder="Reason / reference">
+
+            <div class="modal-actions">
+                <button type="button" class="btn btn-ghost" onclick="closeWithdrawModal()">Cancel</button>
+                <button type="submit" class="btn btn-primary">Confirm Withdrawal</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="modal-backdrop" id="adminWithdrawModal">
+    <div class="modal" style="max-width:440px">
+        <h2>Withdraw Revenue</h2>
+
+        <div style="background:#f0fdfa;border:1px solid #ccfbf1;border-radius:12px;padding:16px;margin-bottom:16px">
+            <div style="font-size:0.78rem;color:#0d9488;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px">
+                Available Balance
+            </div>
+            <div style="font-size:1.7rem;font-weight:700;color:#0d9488" id="adminWithdrawAvailable">
+                KSh 0.00
+            </div>
+        </div>
+
+        <form id="adminWithdrawForm">
+            <label>Amount (KSh)</label>
+            <input type="number" name="amount" min="0.01" step="0.01" required placeholder="e.g. 6.50">
+
+            <label>Note (optional)</label>
+            <input type="text" name="note" placeholder="e.g. Weekly payout">
+
+            <div class="modal-actions">
+                <button type="button" class="btn btn-ghost" onclick="closeAdminWithdrawModal()">Cancel</button>
+                <button type="submit" class="btn btn-primary">Confirm Withdrawal</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script>
+/* ============================================
+   HELPERS
+   ============================================ */
+function toast(msg, type = 'info') {
+    const wrap = document.getElementById('toastWrap');
+    const t = document.createElement('div');
+    t.className = 'toast ' + type;
+    t.textContent = msg;
+    wrap.appendChild(t);
+    setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, 3000);
+}
+
+async function api(endpoint, options = {}) {
+    const res = await fetch(endpoint, { credentials: 'same-origin', ...options });
+    try { return await res.json(); }
+    catch { return { success: false, message: 'Invalid server response' }; }
+}
+
+function esc(s) {
+    return String(s == null ? '' : s)
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+        .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function fmtDate(d) {
+    if (!d) return '—';
+    const dt = new Date(d.replace(' ', 'T'));
+    return dt.toLocaleString('en-KE', {
+        day:'2-digit', month:'short', year:'numeric',
+        hour:'2-digit', minute:'2-digit'
+    });
+}
+
+/* ============================================
+   AUTH
+   ============================================ */
+async function loadAdmin() {
+    const data = await api('auth.php?action=me');
+    if (!data.success || data.role !== 'admin') {
+        window.location.href = 'login.html';
+        return false;
+    }
+    document.getElementById('adminName').textContent = data.name;
+    document.getElementById('adminEmail').textContent = data.email || '';
+    document.getElementById('avatar').textContent = (data.name || 'A').charAt(0).toUpperCase();
+    return true;
+}
+
+async function logout() {
+    await api('auth.php?action=logout');
+    window.location.href = 'index.html';
+}
+
+/* ============================================
+   TABS
+   ============================================ */
+document.querySelectorAll('.nav-link').forEach(link => {
+    link.addEventListener('click', () => {
+        const tab = link.dataset.tab;
+        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        link.classList.add('active');
+        document.getElementById('tab-' + tab).classList.add('active');
+
+        if (tab === 'overview')    loadStats();
+        if (tab === 'plumbers')    loadPlumbers();
+        if (tab === 'users')       loadUsers();
+        if (tab === 'jobs')        loadJobs();
+        if (tab === 'reviews')     loadReviews();
+        if (tab === 'withdrawals') loadWithdrawals();
+        if (tab === 'mywallet')    loadMyWallet();
+    });
+});
+
+/* ============================================
+   OVERVIEW
+   ============================================ */
+async function loadStats() {
+    const data = await api('admin_stats.php?action=stats');
+    if (!data.success) return;
+    const s = data.stats;
+    document.getElementById('statUsers').textContent     = s.users;
+    document.getElementById('statPlumbers').textContent  = s.plumbers;
+    document.getElementById('statJobs').textContent      = s.jobs;
+    document.getElementById('statCompleted').textContent = s.completed_jobs;
+    document.getElementById('statRevenue').textContent   = Number(s.revenue).toLocaleString();
+    document.getElementById('statPayouts').textContent   = s.pending_withdrawals;
+}
+
+/* ============================================
+   PLUMBERS
+   ============================================ */
+async function loadPlumbers() {
+    const data = await api('plumbers.php?action=list');
+    if (!data.success) return;
+
+    const tbody = document.getElementById('plumbersTable');
+    const empty = document.getElementById('plumbersEmpty');
+
+    if (data.plumbers.length === 0) {
+        tbody.innerHTML = '';
+        empty.style.display = 'block';
+        return;
+    }
+    empty.style.display = 'none';
+
+    tbody.innerHTML = data.plumbers.map(p => {
+        const wallet = Number(p.wallet_balance || 0);
+        return `
+        <tr>
+            <td>${p.id}</td>
+            <td>
+                <div style="display:flex;align-items:center;gap:10px">
+                    <div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#1466ad,#14b8a6);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.85rem">
+                        ${esc(p.name).charAt(0).toUpperCase()}
+                    </div>
+                    <div>
+                        <div style="font-weight:600;color:#0f172a">${esc(p.name)}</div>
+                        <div style="font-size:0.75rem;color:#94a3b8">${esc(p.email)}</div>
+                    </div>
+                </div>
+            </td>
+            <td><span class="badge ${p.level}">${p.level}</span></td>
+            <td>${esc(p.specialization)}</td>
+            <td>${Number(p.rating_avg).toFixed(1)} ★</td>
+            <td>
+                <span style="font-weight:700;color:${wallet > 0 ? '#0d9488' : '#94a3b8'}">
+                    KSh ${wallet.toLocaleString()}
+                </span>
+            </td>
+            <td>
+                <button class="btn btn-ghost" onclick='editPlumber(${JSON.stringify(p).replace(/'/g,"&#39;")})'>Edit</button>
+                <button class="btn btn-warn" onclick='openWithdrawModal(${JSON.stringify(p).replace(/'/g,"&#39;")})'>💰 Withdraw</button>
+                <button class="btn btn-danger" onclick="deletePlumber(${p.id})">Delete</button>
+            </td>
+        </tr>
+        `;
+    }).join('');
+}
+
+/* ============================================
+   MODAL — Add / Edit Plumber
+   ============================================ */
+function openAddModal() {
+    document.getElementById('modalTitle').textContent = 'Add Plumber';
+    document.getElementById('plumberForm').reset();
+    document.getElementById('plumberId').value = '';
+    document.getElementById('pPassword').value = 'plumber123';
+    document.getElementById('pwdLabel').textContent = 'Password (default: plumber123)';
+    document.getElementById('pwdLabel').style.display = 'block';
+    document.getElementById('pPassword').style.display = 'block';
+    document.getElementById('plumberModal').classList.add('show');
+}
+
+function editPlumber(p) {
+    document.getElementById('modalTitle').textContent = 'Edit Plumber';
+    document.getElementById('plumberId').value    = p.id;
+    document.getElementById('pName').value        = p.name;
+    document.getElementById('pEmail').value       = p.email;
+    document.getElementById('pPhone').value       = p.phone;
+    document.getElementById('pLevel').value       = p.level;
+    document.getElementById('pSpec').value        = p.specialization;
+    document.getElementById('pwdLabel').style.display = 'none';
+    document.getElementById('pPassword').style.display = 'none';
+    document.getElementById('plumberModal').classList.add('show');
+}
+
+function closeModal() {
+    document.getElementById('plumberModal').classList.remove('show');
+}
+
+document.getElementById('plumberForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const id = document.getElementById('plumberId').value;
+
+    const body = new URLSearchParams();
+    body.append('name',           form.name.value);
+    body.append('email',          form.email.value);
+    body.append('phone',          form.phone.value);
+    body.append('level',          form.level.value);
+    body.append('specialization', form.specialization.value);
+
+    let endpoint;
+    if (id) {
+        endpoint = 'plumbers.php?action=update';
+        body.append('id', id);
+        body.append('availability', '1');
+    } else {
+        endpoint = 'plumbers.php?action=create';
+        body.append('password', form.password.value);
+    }
+
+    const data = await api(endpoint, { method: 'POST', body });
+    if (!data.success) { toast(data.message || 'Operation failed', 'error'); return; }
+
+    toast(id ? 'Plumber updated' : 'Plumber added (default password: plumber123)', 'success');
+    closeModal();
+    loadPlumbers();
+    loadStats();
+});
+
+async function deletePlumber(id) {
+    if (!confirm('Delete this plumber permanently?')) return;
+    const body = new URLSearchParams();
+    body.append('id', id);
+    const data = await api('plumbers.php?action=delete', { method: 'POST', body });
+    if (!data.success) { toast(data.message, 'error'); return; }
+    toast('Plumber deleted', 'success');
+    loadPlumbers();
+    loadStats();
+}
+
+/* ============================================
+   WITHDRAW MODAL (plumber)
+   ============================================ */
+function openWithdrawModal(p) {
+    const wallet = Number(p.wallet_balance || 0);
+    if (wallet <= 0) {
+        toast('This plumber has no funds to withdraw', 'info');
+        return;
+    }
+
+    document.getElementById('withdrawPlumberId').value = p.id;
+    document.getElementById('withdrawPlumberName').textContent = p.name;
+    document.getElementById('withdrawBalance').textContent = 'KSh ' + wallet.toLocaleString();
+    document.getElementById('withdrawAmount').value = '';
+    document.getElementById('withdrawAmount').max = wallet;
+    document.getElementById('withdrawNote').value = '';
+    document.getElementById('withdrawModal').classList.add('show');
+}
+
+function closeWithdrawModal() {
+    document.getElementById('withdrawModal').classList.remove('show');
+}
+
+document.getElementById('withdrawForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const amount = form.amount.value;
+    const plumberName = document.getElementById('withdrawPlumberName').textContent;
+
+    const body = new URLSearchParams();
+    body.append('plumber_id', form.plumber_id.value);
+    body.append('amount',     amount);
+    body.append('note',       form.note.value);
+
+    const data = await api('withdrawals.php?action=admin_payout', { method: 'POST', body });
+
+    if (!data.success) {
+        toast(data.message || 'Withdrawal failed', 'error');
+        return;
+    }
+
+    closeWithdrawModal();
+    form.reset();
+
+    // Show the creative plumber payout success modal
+    showPlumberPayoutSuccess(amount, plumberName);
+
+    setTimeout(() => {
+        loadPlumbers();
+        loadStats();
+        loadWithdrawals();
+    }, 500);
+});
+
+/* ============================================
+   MY WALLET (admin own revenue)
+   ============================================ */
+async function loadMyWallet() {
+    const data = await api('admin_stats.php?action=stats');
+    if (!data.success) return;
+
+    const balance = Number(data.stats.revenue || 0);
+    const formatted = 'KSh ' + balance.toLocaleString('en-KE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    document.getElementById('adminWalletBalance').textContent = formatted;
+    document.getElementById('adminWithdrawAvailable').textContent = formatted;
+
+    const w = await api('withdrawals.php?action=admin_list');
+    const tbody = document.getElementById('adminWithdrawalsTable');
+    const empty = document.getElementById('adminWithdrawalsEmpty');
+
+    if (!w.success || !w.withdrawals || w.withdrawals.length === 0) {
+        tbody.innerHTML = '';
+        empty.style.display = 'block';
+        return;
+    }
+    empty.style.display = 'none';
+
+    tbody.innerHTML = w.withdrawals.map(row => `
+        <tr>
+            <td>#${row.id}</td>
+            <td style="font-weight:700;color:#0d9488">KSh ${Number(row.amount).toFixed(2)}</td>
+            <td><span class="badge ${row.status}">${row.status}</span></td>
+            <td>${fmtDate(row.requested_at)}</td>
+        </tr>
+    `).join('');
+}
+
+function openAdminWithdrawModal() {
+    const balanceText = document.getElementById('adminWalletBalance').textContent;
+    const balance = Number(balanceText.replace(/[^\d.]/g, '')) || 0;
+
+    if (balance <= 0) {
+        toast('You have no revenue to withdraw yet', 'info');
+        return;
+    }
+
+    document.getElementById('adminWithdrawModal').classList.add('show');
+}
+
+function closeAdminWithdrawModal() {
+    document.getElementById('adminWithdrawModal').classList.remove('show');
+}
+
+/* ============================================
+   WITHDRAWAL SUCCESS MODAL (admin)
+   ============================================ */
+function showWithdrawSuccess(amount, message) {
+    const old = document.getElementById('wdSuccess');
+    if (old) old.remove();
+
+    const colors = ['#10b981', '#14b8a6', '#f59e0b', '#ef4444', '#3b82f6', '#8b5cf6', '#ec4899'];
+    let confettiHtml = '';
+    for (let i = 0; i < 24; i++) {
+        const left = Math.random() * 100;
+        const delay = (Math.random() * 0.5).toFixed(2);
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        const rotate = Math.floor(Math.random() * 360);
+        confettiHtml += `<span style="left:${left}%;background:${color};animation-delay:${delay}s;transform:rotate(${rotate}deg)"></span>`;
+    }
+
+    const ref = 'WD-' + Date.now().toString(36).toUpperCase().slice(-6);
+    const fmtAmount = 'KSh ' + Number(amount).toLocaleString('en-KE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+    const modal = document.createElement('div');
+    modal.id = 'wdSuccess';
+    modal.className = 'wd-success-backdrop';
+    modal.innerHTML = `
+        <div class="wd-success-card">
+            <div class="wd-confetti">${confettiHtml}</div>
+
+            <div class="wd-ring">
+                <svg viewBox="0 0 120 120">
+                    <circle class="bg-circle" cx="60" cy="60" r="54"></circle>
+                    <circle class="fg-circle" cx="60" cy="60" r="54"></circle>
+                </svg>
+                <div class="check">✓</div>
+            </div>
+
+            <h2>Withdrawal Successful</h2>
+            <div class="sub">Your payout has been processed</div>
+
+            <div class="wd-amount">${fmtAmount}</div>
+            <div class="wd-ref">Reference: ${ref}</div>
+
+            <div class="wd-bar"><div></div></div>
+            <div class="wd-close-hint">Closing automatically...</div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+
+    setTimeout(() => {
+        modal.style.transition = 'opacity 0.3s ease';
+        modal.style.opacity = '0';
+        setTimeout(() => modal.remove(), 300);
+    }, 4000);
+
+    modal.addEventListener('click', () => modal.remove());
+}
+
+/* ============================================
+   PLUMBER PAYOUT SUCCESS MODAL (creative)
+   ============================================ */
+function showPlumberPayoutSuccess(amount, plumberName) {
+    const old = document.getElementById('wdSuccess');
+    if (old) old.remove();
+
+    const colors = ['#10b981', '#14b8a6', '#f59e0b', '#ef4444', '#3b82f6', '#8b5cf6', '#ec4899'];
+    let confettiHtml = '';
+    for (let i = 0; i < 24; i++) {
+        const left = Math.random() * 100;
+        const delay = (Math.random() * 0.5).toFixed(2);
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        const rotate = Math.floor(Math.random() * 360);
+        confettiHtml += `<span style="left:${left}%;background:${color};animation-delay:${delay}s;transform:rotate(${rotate}deg)"></span>`;
+    }
+
+    const ref = 'PY-' + Date.now().toString(36).toUpperCase().slice(-6);
+    const fmtAmount = 'KSh ' + Number(amount).toLocaleString('en-KE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+    const modal = document.createElement('div');
+    modal.id = 'wdSuccess';
+    modal.className = 'wd-success-backdrop';
+    modal.innerHTML = `
+        <div class="wd-success-card">
+            <div class="wd-confetti">${confettiHtml}</div>
+
+            <div class="wd-ring">
+                <svg viewBox="0 0 120 120">
+                    <circle class="bg-circle" cx="60" cy="60" r="54"></circle>
+                    <circle class="fg-circle" cx="60" cy="60" r="54"></circle>
+                </svg>
+                <div class="check">✓</div>
+            </div>
+
+            <h2>Payout Sent!</h2>
+            <div class="sub">${esc(plumberName)} has been paid</div>
+
+            <div class="wd-amount">${fmtAmount}</div>
+            <div class="wd-ref">Reference: ${ref}</div>
+
+            <div class="wd-bar"><div></div></div>
+            <div class="wd-close-hint">Closing automatically...</div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+
+    setTimeout(() => {
+        modal.style.transition = 'opacity 0.3s ease';
+        modal.style.opacity = '0';
+        setTimeout(() => modal.remove(), 300);
+    }, 4000);
+
+    modal.addEventListener('click', () => modal.remove());
+}
+
+document.getElementById('adminWithdrawForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const amount = form.amount.value;
+
+    const body = new URLSearchParams();
+    body.append('amount', amount);
+    body.append('note', form.note.value || '');
+
+    const data = await api('withdrawals.php?action=admin_withdraw', { method: 'POST', body });
+
+    if (!data.success) {
+        toast(data.message || 'Withdrawal failed', 'error');
+        return;
+    }
+
+    closeAdminWithdrawModal();
+    form.reset();
+
+    showWithdrawSuccess(amount, data.message);
+
+    setTimeout(() => {
+        loadMyWallet();
+        loadStats();
+    }, 500);
+});
+
+/* ============================================
+   USERS
+   ============================================ */
+async function loadUsers() {
+    const data = await api('admin_stats.php?action=users');
+    if (!data.success) return;
+    document.getElementById('usersTable').innerHTML = data.users.map(u => `
+        <tr>
+            <td>${u.id}</td>
+            <td>${esc(u.name)}</td>
+            <td>${esc(u.email)}</td>
+            <td>${esc(u.phone)}</td>
+            <td><span class="badge ${u.role}">${u.role}</span></td>
+            <td>${fmtDate(u.created_at)}</td>
+        </tr>
+    `).join('');
+}
+
+/* ============================================
+   JOBS
+   ============================================ */
+async function loadJobs() {
+    const data = await api('jobs.php?action=list');
+    if (!data.success) return;
+    const tbody = document.getElementById('jobsTable');
+    const empty = document.getElementById('jobsEmpty');
+    if (data.jobs.length === 0) {
+        tbody.innerHTML = '';
+        empty.style.display = 'block';
+        return;
+    }
+    empty.style.display = 'none';
+    tbody.innerHTML = data.jobs.map(j => `
+        <tr>
+            <td>${j.id}</td>
+            <td>${esc(j.user_name || '—')}</td>
+            <td>${esc(j.plumber_name || '—')}</td>
+            <td>${esc(j.ai_category || '—')}</td>
+            <td>${esc((j.description || '').slice(0, 50))}${(j.description || '').length > 50 ? '…' : ''}</td>
+            <td><span class="badge ${j.status}">${j.status}</span></td>
+            <td>${fmtDate(j.created_at)}</td>
+        </tr>
+    `).join('');
+}
+
+/* ============================================
+   REVIEWS
+   ============================================ */
+async function loadReviews() {
+    const data = await api('reviews.php?action=list');
+    if (!data.success) return;
+    const tbody = document.getElementById('reviewsTable');
+    const empty = document.getElementById('reviewsEmpty');
+    if (data.reviews.length === 0) {
+        tbody.innerHTML = '';
+        empty.style.display = 'block';
+        return;
+    }
+    empty.style.display = 'none';
+    tbody.innerHTML = data.reviews.map(r => `
+        <tr>
+            <td>${r.id}</td>
+            <td>${esc(r.user_name)}</td>
+            <td>${esc(r.plumber_name)}</td>
+            <td>${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</td>
+            <td>${esc(r.comment || '—')}</td>
+            <td>${fmtDate(r.created_at)}</td>
+        </tr>
+    `).join('');
+}
+
+/* ============================================
+   WITHDRAWALS LIST (plumbers)
+   ============================================ */
+async function loadWithdrawals() {
+    const data = await api('withdrawals.php?action=list');
+    if (!data.success) return;
+    const tbody = document.getElementById('withdrawalsTable');
+    const empty = document.getElementById('withdrawalsEmpty');
+    if (data.withdrawals.length === 0) {
+        tbody.innerHTML = '';
+        empty.style.display = 'block';
+        return;
+    }
+    empty.style.display = 'none';
+    tbody.innerHTML = data.withdrawals.map(w => `
+        <tr>
+            <td>${w.id}</td>
+            <td>${esc(w.plumber_name)}</td>
+            <td>KSh ${Number(w.amount).toLocaleString()}</td>
+            <td><span class="badge ${w.status}">${w.status}</span></td>
+            <td>${fmtDate(w.requested_at)}</td>
+            <td>
+                ${w.status === 'requested' ? `
+                    <button class="btn btn-success" onclick="updateWithdrawal(${w.id},'approved')">Approve</button>
+                    <button class="btn btn-danger"  onclick="updateWithdrawal(${w.id},'rejected')">Reject</button>
+                ` : ''}
+                ${w.status === 'approved' ? `
+                    <button class="btn btn-warn" onclick="updateWithdrawal(${w.id},'paid')">Mark Paid</button>
+                ` : ''}
+            </td>
+        </tr>
+    `).join('');
+}
+
+async function updateWithdrawal(id, status) {
+    const body = new URLSearchParams();
+    body.append('id', id);
+    body.append('status', status);
+    const data = await api('withdrawals.php?action=update', { method: 'POST', body });
+    if (!data.success) { toast(data.message, 'error'); return; }
+    toast('Withdrawal ' + status, 'success');
+    loadWithdrawals();
+    loadStats();
+}
+
+/* ============================================
+   INIT
+   ============================================ */
+(async function init() {
+    const ok = await loadAdmin();
+    if (!ok) return;
+
+    const name = document.getElementById('adminName').textContent || 'Admin';
+    document.getElementById('greetName').textContent = name;
+
+    const now = new Date();
+    document.getElementById('greetDate').textContent =
+        now.toLocaleDateString('en-KE', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+
+    loadStats();
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,2030 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Dashboard — Smart Plumbing</title>
+<style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+        --brand-600: #1466ad;
+        --brand-500: #1e7fd1;
+        --accent:    #14b8a6;
+        --ink:       #0f172a;
+        --muted:     #64748b;
+        --line:      #e8eef6;
+    }
+
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+        background: #f4f7fb;
+        color: var(--ink);
+        min-height: 100vh;
+    }
+
+    .layout { display: flex; min-height: 100vh; }
+
+    /* ============ SIDEBAR ============ */
+    .sidebar {
+        width: 250px;
+        flex-shrink: 0;
+        background: linear-gradient(180deg, #0a2540 0%, #113d6b 55%, #1466ad 100%);
+        color: #fff;
+        padding: 26px 18px 20px;
+        display: flex;
+        flex-direction: column;
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        overflow-y: auto;
+        box-shadow: 4px 0 24px rgba(10, 37, 64, 0.15);
+    }
+    .sidebar::before {
+        content: '';
+        position: absolute;
+        width: 260px; height: 260px;
+        background: radial-gradient(circle, rgba(20, 184, 166, 0.28), transparent 70%);
+        bottom: -100px; left: -80px;
+        pointer-events: none;
+    }
+    .sidebar .brand {
+        display: flex; align-items: center; gap: 12px;
+        font-weight: 700; font-size: 1.05rem;
+        margin-bottom: 30px; padding-bottom: 22px;
+        border-bottom: 1px solid rgba(255,255,255,0.10);
+        position: relative; z-index: 1;
+    }
+    .sidebar .brand .icon {
+        width: 42px; height: 42px;
+        background: linear-gradient(135deg, rgba(255,255,255,0.22), rgba(255,255,255,0.08));
+        border: 1px solid rgba(255,255,255,0.18);
+        border-radius: 12px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 20px;
+    }
+    .sidebar .brand small {
+        display: block; font-weight: 400; font-size: 0.75rem;
+        color: rgba(255,255,255,0.65); margin-top: 2px;
+    }
+
+    .sidebar nav {
+        display: flex; flex-direction: column; gap: 4px; flex: 1;
+        position: relative; z-index: 1;
+    }
+    .sidebar nav .section-label {
+        font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em;
+        color: rgba(255,255,255,0.45); text-transform: uppercase;
+        padding: 14px 12px 6px;
+    }
+    .sidebar nav a {
+        color: rgba(255,255,255,0.82);
+        padding: 11px 14px;
+        border-radius: 10px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex; align-items: center; gap: 12px;
+        position: relative;
+    }
+    .sidebar nav a .ico { font-size: 1.05rem; width: 22px; text-align: center; }
+    .sidebar nav a:hover {
+        background: rgba(255,255,255,0.10); color: #fff;
+        transform: translateX(2px);
+    }
+    .sidebar nav a.active {
+        background: linear-gradient(90deg, rgba(255,255,255,0.20), rgba(255,255,255,0.08));
+        color: #fff; font-weight: 600;
+        box-shadow: inset 3px 0 0 var(--accent);
+    }
+    .sidebar nav a.active::after {
+        content: ''; position: absolute; right: 12px;
+        width: 6px; height: 6px;
+        background: var(--accent); border-radius: 50%;
+        box-shadow: 0 0 10px var(--accent);
+    }
+
+    .sidebar .user-chip {
+        margin-top: 20px; padding-top: 18px;
+        border-top: 1px solid rgba(255,255,255,0.10);
+        position: relative; z-index: 1;
+    }
+    .sidebar .user-chip .avatar {
+        width: 38px; height: 38px; border-radius: 50%;
+        background: linear-gradient(135deg, var(--accent), #0d9488);
+        display: flex; align-items: center; justify-content: center;
+        font-weight: 700; font-size: 0.95rem;
+        margin-bottom: 10px;
+        box-shadow: 0 4px 12px rgba(20, 184, 166, 0.4);
+    }
+    .sidebar .user-chip strong {
+        display: block; color: #fff; font-size: 0.92rem;
+        margin-bottom: 2px;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .sidebar .user-chip .email {
+        font-size: 0.75rem; color: rgba(255,255,255,0.6);
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        display: block;
+    }
+    .sidebar .user-chip button {
+        margin-top: 14px; width: 100%;
+        background: rgba(255,255,255,0.12);
+        color: #fff; border: 1px solid rgba(255,255,255,0.15);
+        padding: 9px; border-radius: 8px;
+        cursor: pointer; font-size: 0.85rem; font-weight: 600;
+        transition: all 0.2s ease;
+    }
+    .sidebar .user-chip button:hover {
+        background: rgba(239, 68, 68, 0.85);
+        border-color: rgba(239, 68, 68, 0.9);
+    }
+
+    /* ============ MAIN ============ */
+    .main { flex: 1; padding: 30px 38px 60px; min-width: 0; }
+
+    .greeting {
+        display: flex; justify-content: space-between; align-items: center;
+        background: linear-gradient(135deg, #ffffff 0%, #f0f8ff 100%);
+        border: 1px solid #e0ecf7;
+        border-radius: 16px;
+        padding: 20px 26px;
+        margin-bottom: 24px;
+        box-shadow: 0 2px 8px rgba(20, 102, 173, 0.06);
+        position: relative; overflow: hidden;
+    }
+    .greeting::before {
+        content: '';
+        position: absolute; width: 160px; height: 160px;
+        background: radial-gradient(circle, rgba(20, 184, 166, 0.14), transparent 70%);
+        top: -60px; right: -40px;
+        pointer-events: none;
+    }
+    .greeting h1 {
+        font-size: 1.35rem; font-weight: 700;
+        letter-spacing: -0.02em;
+        color: #0f172a; margin-bottom: 4px;
+    }
+    .greeting h1 span {
+        background: linear-gradient(135deg, #1466ad, #14b8a6);
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    .greeting p { color: #64748b; font-size: 0.88rem; }
+    .greeting-date {
+        font-size: 0.85rem; color: #64748b; font-weight: 500;
+        position: relative; z-index: 1;
+    }
+
+    .page-header {
+        display: flex; justify-content: space-between; align-items: center;
+        margin-bottom: 24px; flex-wrap: wrap; gap: 12px;
+    }
+    .page-header h1 { font-size: 1.6rem; letter-spacing: -0.02em; }
+    .page-header p { color: var(--muted); font-size: 0.92rem; margin-top: 3px; }
+
+    .tab-content { display: none; }
+    .tab-content.active { display: block; animation: fadeUp 0.35s ease; }
+    @keyframes fadeUp {
+        from { opacity: 0; transform: translateY(8px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ============ STATS ============ */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 16px; margin-bottom: 26px;
+    }
+    .stat-card {
+        background: #fff; border-radius: 14px;
+        padding: 20px; border: 1px solid var(--line);
+        box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+        transition: all 0.2s ease;
+        position: relative; overflow: hidden;
+    }
+    .stat-card::before {
+        content: ''; position: absolute;
+        inset: 0 auto 0 0; width: 4px;
+        background: linear-gradient(180deg, var(--brand-500), var(--accent));
+        opacity: 0; transition: opacity 0.2s ease;
+    }
+    .stat-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+    }
+    .stat-card:hover::before { opacity: 1; }
+    .stat-card .label {
+        font-size: 0.72rem; font-weight: 700;
+        color: var(--muted);
+        text-transform: uppercase; letter-spacing: 0.06em;
+        margin-bottom: 6px;
+    }
+    .stat-card .value { font-size: 1.75rem; font-weight: 700; color: var(--ink); }
+    .stat-card .value.accent { color: #0d9488; }
+
+    /* ============ CARDS ============ */
+    .card {
+        background: #fff; border-radius: 14px;
+        padding: 24px; border: 1px solid var(--line);
+        box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+        margin-bottom: 22px;
+    }
+    .card h2 {
+        font-size: 1.05rem; margin-bottom: 16px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid var(--line);
+        display: flex; justify-content: space-between; align-items: center;
+    }
+
+    /* ============ BUTTONS ============ */
+    .btn {
+        display: inline-flex; align-items: center; gap: 6px;
+        padding: 9px 16px;
+        border: none; border-radius: 8px;
+        font-family: inherit; font-size: 0.88rem; font-weight: 600;
+        cursor: pointer; transition: all 0.18s ease;
+    }
+    .btn-primary {
+        background: linear-gradient(135deg, #1466ad 0%, #1e7fd1 100%);
+        color: #fff;
+        box-shadow: 0 4px 12px rgba(20, 102, 173, 0.24);
+    }
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(20, 102, 173, 0.34); }
+
+    .btn-success { background: #10b981; color: #fff; padding: 6px 12px; font-size: 0.82rem; }
+    .btn-success:hover { background: #059669; }
+
+    .btn-danger { background: #ef4444; color: #fff; padding: 6px 12px; font-size: 0.82rem; }
+    .btn-danger:hover { background: #dc2626; }
+
+    .btn-warn { background: #f59e0b; color: #fff; padding: 6px 12px; font-size: 0.82rem; }
+    .btn-warn:hover { background: #d97706; }
+
+    .btn-ghost { background: #f1f5f9; color: #334155; padding: 6px 12px; font-size: 0.82rem; }
+    .btn-ghost:hover { background: #e2e8f0; }
+
+    /* ============ TABLE ============ */
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+    th {
+        text-align: left; padding: 11px 12px;
+        font-size: 0.72rem; font-weight: 700;
+        color: var(--muted); text-transform: uppercase;
+        letter-spacing: 0.05em;
+        border-bottom: 1px solid #e2e8f0;
+        background: #f8fafc;
+    }
+    td { padding: 12px; border-bottom: 1px solid #f1f5f9; color: #334155; vertical-align: middle; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #f8fafc; }
+
+    /* ============ BADGES ============ */
+    .badge {
+        display: inline-block; padding: 3px 10px;
+        border-radius: 999px; font-size: 0.72rem; font-weight: 600;
+    }
+    .badge.pending   { background: #fef3c7; color: #92400e; }
+    .badge.accepted  { background: #dbeafe; color: #1e40af; }
+    .badge.paid      { background: #d1fae5; color: #065f46; }
+    .badge.completed { background: #10b981; color: #fff; }
+    .badge.declined  { background: #fee2e2; color: #991b1b; }
+
+    /* ============ SUBMIT ISSUE FORM ============ */
+    .issue-form textarea,
+    .issue-form input[type="text"] {
+        width: 100%;
+        padding: 13px 14px;
+        border: 1.5px solid #e2e8f0;
+        background: #f8fafc;
+        border-radius: 10px;
+        font-size: 0.92rem; font-family: inherit;
+        color: var(--ink);
+        transition: all 0.2s ease;
+    }
+    .issue-form textarea {
+        min-height: 120px;
+        resize: vertical;
+    }
+    .issue-form textarea:focus,
+    .issue-form input[type="text"]:focus {
+        outline: none;
+        border-color: var(--brand-600);
+        background: #fff;
+        box-shadow: 0 0 0 4px rgba(20, 102, 173, 0.10);
+    }
+
+    .hint {
+        display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px;
+    }
+    .hint span {
+        background: #f1f5f9;
+        color: #475569;
+        font-size: 0.78rem;
+        padding: 4px 10px;
+        border-radius: 999px;
+        cursor: pointer;
+        transition: all 0.15s ease;
+    }
+    .hint span:hover { background: #e0ecf7; color: var(--brand-600); }
+
+    /* ============ MATCH RESULT ============ */
+    .match-result {
+        margin-top: 18px;
+        padding: 16px;
+        background: linear-gradient(135deg, #f0fdfa, #ecfdf5);
+        border: 1px solid #ccfbf1;
+        border-radius: 12px;
+        animation: fadeUp 0.4s ease;
+    }
+    .match-result .title {
+        font-size: 0.78rem; font-weight: 700;
+        color: #0d9488; text-transform: uppercase;
+        letter-spacing: 0.06em; margin-bottom: 8px;
+    }
+    .match-result .who {
+        font-size: 1.05rem; font-weight: 700; color: #0f172a;
+        margin-bottom: 4px;
+    }
+    .match-result .meta {
+        font-size: 0.85rem; color: #64748b;
+        line-height: 1.6;
+    }
+    .match-result .meta strong { color: #0d9488; }
+
+    /* ============ MODAL ============ */
+    .modal-backdrop {
+        position: fixed; inset: 0;
+        background: rgba(15, 23, 42, 0.55);
+        display: none; align-items: center; justify-content: center;
+        z-index: 999; padding: 20px;
+    }
+    .modal-backdrop.show { display: flex; }
+    .modal {
+        background: #fff; border-radius: 16px;
+        padding: 30px; max-width: 500px; width: 100%;
+        box-shadow: 0 24px 60px rgba(15,23,42,0.25);
+        animation: rise 0.3s ease;
+        max-height: 90vh; overflow-y: auto;
+    }
+    @keyframes rise {
+        from { opacity: 0; transform: translateY(12px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+    .modal h2 { margin-bottom: 18px; font-size: 1.2rem; }
+
+    /* ============ FORMS ============ */
+    label {
+        display: block; font-size: 0.82rem;
+        font-weight: 600; color: #334155;
+        margin-bottom: 6px; margin-top: 14px;
+    }
+    label:first-child { margin-top: 0; }
+    input, select {
+        width: 100%; padding: 10px 12px;
+        border: 1.5px solid #e2e8f0;
+        background: #f8fafc;
+        border-radius: 8px;
+        font-size: 0.9rem; font-family: inherit;
+        color: var(--ink);
+        transition: all 0.2s ease;
+    }
+    input:focus, select:focus {
+        outline: none;
+        border-color: var(--brand-600);
+        background: #fff;
+        box-shadow: 0 0 0 4px rgba(20, 102, 173, 0.10);
+    }
+    .modal-actions {
+        display: flex; gap: 10px;
+        margin-top: 22px; justify-content: flex-end;
+    }
+
+    /* ============ STAR RATING ============ */
+    .star-pick {
+        display: flex; gap: 6px; margin: 8px 0 4px;
+        font-size: 1.8rem; color: #cbd5e1;
+        cursor: pointer;
+    }
+    .star-pick span {
+        transition: transform 0.15s ease, color 0.15s ease;
+    }
+    .star-pick span.on { color: #f59e0b; }
+    .star-pick span:hover { transform: scale(1.15); }
+
+    /* ============ TOAST ============ */
+    .toast-wrap {
+        position: fixed; top: 22px; right: 22px;
+        z-index: 9999;
+        display: flex; flex-direction: column; gap: 10px;
+    }
+    .toast {
+        padding: 14px 20px; border-radius: 10px;
+        color: #fff; font-size: 0.9rem; font-weight: 500;
+        box-shadow: 0 10px 24px rgba(15,23,42,0.18);
+        animation: slideIn 0.3s ease;
+        min-width: 240px;
+    }
+    .toast.success { background: #10b981; }
+    .toast.error   { background: #ef4444; }
+    .toast.info    { background: #3b82f6; }
+    @keyframes slideIn {
+        from { opacity: 0; transform: translateX(30px); }
+        to   { opacity: 1; transform: translateX(0); }
+    }
+
+    .empty {
+        padding: 40px 20px; text-align: center;
+        color: #94a3b8; font-size: 0.9rem;
+    }
+    .empty .big { font-size: 2.4rem; margin-bottom: 10px; opacity: 0.5; }
+
+    /* ============ PAYMENT SEQUENCE MODALS ============ */
+    .pay-seq {
+        position: fixed; inset: 0;
+        background: rgba(15, 23, 42, 0.55);
+        display: flex; align-items: center; justify-content: center;
+        z-index: 1000; padding: 20px;
+        animation: payFade 0.2s ease;
+    }
+    @keyframes payFade { from { opacity: 0; } to { opacity: 1; } }
+    .pay-seq-inner {
+        background: #fff; border-radius: 16px;
+        padding: 40px 32px; max-width: 440px; width: 100%;
+        text-align: center;
+        box-shadow: 0 24px 60px rgba(15,23,42,0.25);
+        animation: rise 0.3s ease;
+    }
+    .pay-icon-circle {
+        width: 84px; height: 84px;
+        margin: 0 auto 22px;
+        border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 2.4rem;
+    }
+    .pay-icon-circle.blue  { background: #e0f2fe; color: #0284c7; border: 4px solid #bae6fd; }
+    .pay-icon-circle.green { background: #d1fae5; color: #10b981; border: 4px solid #a7f3d0; }
+    .pay-seq-inner h2 {
+        font-size: 1.4rem; font-weight: 700;
+        color: #0f172a; margin-bottom: 14px;
+    }
+    .pay-seq-inner p {
+        font-size: 0.95rem; color: #475569;
+        line-height: 1.55; margin-bottom: 14px;
+    }
+    .pay-seq-inner .small-muted {
+        font-size: 0.82rem; color: #94a3b8;
+    }
+    .pay-countdown {
+        font-size: 1.6rem; font-weight: 700;
+        color: #0f172a; margin-bottom: 12px;
+    }
+    .pay-bar {
+        height: 8px; background: #e2e8f0;
+        border-radius: 999px; overflow: hidden;
+        margin-bottom: 24px;
+    }
+    .pay-bar > div {
+        height: 100%;
+        background: linear-gradient(90deg, #14b8a6, #0d9488);
+        border-radius: 999px;
+        transition: width 1s linear;
+    }
+    .pay-spinner {
+        width: 32px; height: 32px; margin: 0 auto;
+        border: 3px solid #e2e8f0;
+        border-top-color: #14b8a6;
+        border-radius: 50%;
+        animation: paySpin 0.8s linear infinite;
+    }
+    @keyframes paySpin { to { transform: rotate(360deg); } }
+
+    /* ============================================
+       AI MATCHING STAGES
+       ============================================ */
+    .ai-stage {
+        margin-top: 18px;
+        padding: 28px 24px;
+        background: linear-gradient(135deg, #f0f9ff 0%, #ecfdf5 100%);
+        border: 1px solid #ccfbf1;
+        border-radius: 16px;
+        text-align: center;
+        animation: aiFadeUp 0.4s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    @keyframes aiFadeUp {
+        from { opacity: 0; transform: translateY(12px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .ai-stage h3 {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: #0f172a;
+        margin-bottom: 6px;
+        letter-spacing: -0.01em;
+    }
+    .ai-status {
+        font-size: 0.88rem;
+        color: #64748b;
+        margin-bottom: 18px;
+    }
+
+    .ai-scan-wrap {
+        position: relative;
+        width: 120px; height: 120px;
+        margin: 0 auto 20px;
+    }
+    .ai-scan-core {
+        position: absolute;
+        inset: 0;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 2.4rem;
+        animation: aiPulse 1.6s ease-in-out infinite;
+    }
+    @keyframes aiPulse {
+        0%, 100% { transform: scale(1); }
+        50%      { transform: scale(1.15); }
+    }
+    .ai-scan-ring {
+        position: absolute;
+        inset: 0;
+        border: 2px solid #0d9488;
+        border-radius: 50%;
+        opacity: 0;
+        animation: aiRing 2.4s cubic-bezier(0.2, 0.6, 0.4, 1) infinite;
+    }
+    .ai-scan-ring.r2 { animation-delay: 0.6s; }
+    .ai-scan-ring.r3 { animation-delay: 1.2s; }
+    @keyframes aiRing {
+        0%   { transform: scale(0.5); opacity: 0.9; }
+        100% { transform: scale(1.6); opacity: 0; }
+    }
+
+    .ai-progress {
+        width: 200px;
+        height: 6px;
+        background: #e2e8f0;
+        border-radius: 999px;
+        overflow: hidden;
+        margin: 16px auto 0;
+    }
+    .ai-progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #14b8a6, #0d9488);
+        width: 0%;
+        border-radius: 999px;
+        animation: aiFill var(--dur, 2s) ease-out forwards;
+    }
+    @keyframes aiFill {
+        from { width: 0%; }
+        to   { width: 100%; }
+    }
+
+    .ai-icon-pulse {
+        font-size: 3rem;
+        margin-bottom: 12px;
+        animation: aiBob 1.4s ease-in-out infinite;
+        display: inline-block;
+    }
+    @keyframes aiBob {
+        0%, 100% { transform: translateY(0); }
+        50%      { transform: translateY(-6px); }
+    }
+
+    .ai-cat-list {
+        max-width: 300px;
+        margin: 12px auto 0;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    .ai-cat-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #fff;
+        padding: 10px 14px;
+        border-radius: 10px;
+        font-size: 0.88rem;
+        color: #334155;
+        border: 1px solid #e2e8f0;
+        transition: all 0.25s ease;
+    }
+    .ai-cat-check {
+        font-weight: 700;
+        color: #cbd5e1;
+    }
+    .ai-cat-check.on {
+        color: #10b981;
+        font-size: 1.05rem;
+    }
+
+    .ai-icon-spin {
+        font-size: 3rem;
+        display: inline-block;
+        margin-bottom: 12px;
+        animation: aiSpin 2s linear infinite;
+    }
+    @keyframes aiSpin {
+        to { transform: rotate(360deg); }
+    }
+    .ai-score-rows {
+        max-width: 340px;
+        margin: 12px auto 0;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    .ai-score-row {
+        display: grid;
+        grid-template-columns: 100px 1fr 40px;
+        align-items: center;
+        gap: 10px;
+        font-size: 0.82rem;
+        color: #475569;
+    }
+    .ai-score-row b {
+        color: #0d9488;
+        font-size: 0.82rem;
+        text-align: right;
+    }
+    .ai-score-bar {
+        height: 8px;
+        background: #e2e8f0;
+        border-radius: 999px;
+        overflow: hidden;
+    }
+    .ai-score-bar > i {
+        display: block;
+        height: 100%;
+        background: linear-gradient(90deg, #14b8a6, #0d9488);
+        border-radius: 999px;
+        width: 0%;
+        animation: aiBarFill 1.3s ease-out forwards;
+    }
+    @keyframes aiBarFill {
+        from { width: 0%; }
+        to   { width: var(--w, 50%); }
+    }
+
+    .ai-stage-success {
+        background: linear-gradient(135deg, #ecfdf5 0%, #f0fdfa 100%);
+        border-color: #a7f3d0;
+    }
+    .ai-match-badge {
+        display: inline-block;
+        background: linear-gradient(135deg, #10b981, #0d9488);
+        color: #fff;
+        padding: 6px 14px;
+        border-radius: 999px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        margin-bottom: 16px;
+        box-shadow: 0 6px 18px rgba(16, 185, 129, 0.35);
+        animation: aiBadgePop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    @keyframes aiBadgePop {
+        from { transform: scale(0.6); opacity: 0; }
+        to   { transform: scale(1); opacity: 1; }
+    }
+    .ai-match-card {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        background: #fff;
+        padding: 16px;
+        border-radius: 14px;
+        border: 1.5px solid #a7f3d0;
+        box-shadow: 0 8px 24px rgba(13, 148, 136, 0.12);
+        margin: 0 auto 14px;
+        max-width: 400px;
+        animation: aiCardIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.15s both;
+    }
+    @keyframes aiCardIn {
+        from { transform: translateY(20px) scale(0.9); opacity: 0; }
+        to   { transform: translateY(0) scale(1); opacity: 1; }
+    }
+    .ai-match-avatar {
+        width: 52px; height: 52px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #1466ad, #14b8a6);
+        color: #fff;
+        font-weight: 800;
+        font-size: 1.4rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        box-shadow: 0 6px 14px rgba(20, 102, 173, 0.25);
+    }
+    .ai-match-info {
+        flex: 1;
+        text-align: left;
+        min-width: 0;
+    }
+    .ai-match-name {
+        font-weight: 700;
+        font-size: 1.05rem;
+        color: #0f172a;
+        margin-bottom: 4px;
+    }
+    .ai-match-meta {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        font-size: 0.82rem;
+        color: #64748b;
+    }
+    .ai-match-tick {
+        width: 28px; height: 28px;
+        border-radius: 50%;
+        background: #10b981;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        animation: aiTickPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.4s both;
+    }
+    @keyframes aiTickPop {
+        from { transform: scale(0); }
+        to   { transform: scale(1); }
+    }
+
+    .ai-stage-waiting {
+        background: linear-gradient(135deg, #eff6ff 0%, #f0f9ff 100%);
+        border-color: #bfdbfe;
+    }
+    .ai-wait-ring {
+        width: 70px; height: 70px;
+        border: 4px solid #bfdbfe;
+        border-top-color: #3b82f6;
+        border-radius: 50%;
+        margin: 0 auto 18px;
+        animation: aiSpin 1s linear infinite;
+    }
+    .ai-wait-card {
+        background: #fff;
+        border: 1px solid #dbeafe;
+        border-radius: 12px;
+        padding: 14px 18px;
+        max-width: 380px;
+        margin: 0 auto 14px;
+        text-align: left;
+        animation: aiCardIn 0.5s ease 0.1s both;
+    }
+    .ai-wait-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 6px 0;
+        font-size: 0.86rem;
+        color: #475569;
+        border-bottom: 1px dashed #e0e7ef;
+    }
+    .ai-wait-row:last-child { border-bottom: none; }
+    .ai-wait-row b { color: #0f172a; }
+    .ai-tip {
+        font-size: 0.82rem;
+        color: #64748b;
+        background: #f8fafc;
+        padding: 10px 14px;
+        border-radius: 10px;
+        max-width: 380px;
+        margin: 0 auto;
+        border: 1px dashed #cbd5e1;
+    }
+
+    .ai-accepted-burst {
+        font-size: 3.4rem;
+        margin-bottom: 10px;
+        animation: aiTickPop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .ai-accepted-hint {
+        background: #ecfdf5;
+        border: 1px solid #a7f3d0;
+        color: #065f46;
+        font-size: 0.86rem;
+        padding: 10px 14px;
+        border-radius: 10px;
+        max-width: 380px;
+        margin: 12px auto 0;
+    }
+    .ai-accepted-hint b { color: #0d9488; }
+
+    .ai-stage-error {
+        background: #fef2f2;
+        border-color: #fecaca;
+    }
+    .ai-icon-error {
+        font-size: 3rem;
+        margin-bottom: 12px;
+        animation: aiBob 1.4s ease-in-out infinite;
+    }
+    .ai-stage-error h3 { color: #991b1b; }
+
+    .ai-dots::after {
+        content: '';
+        animation: aiDots 1.5s steps(4, end) infinite;
+    }
+    @keyframes aiDots {
+        0%   { content: ''; }
+        25%  { content: '.'; }
+        50%  { content: '..'; }
+        75%  { content: '...'; }
+        100% { content: ''; }
+    }
+
+    /* ============ MOBILE ============ */
+    @media (max-width: 800px) {
+        .layout { flex-direction: column; }
+        .sidebar {
+            position: relative; width: 100%; height: auto;
+            padding: 16px 16px; flex-direction: column;
+        }
+        .sidebar .brand { margin-bottom: 14px; padding-bottom: 14px; }
+        .sidebar nav { flex-direction: row; flex-wrap: wrap; gap: 6px; }
+        .sidebar nav .section-label { display: none; }
+        .sidebar nav a { padding: 8px 12px; font-size: 0.82rem; }
+        .sidebar .user-chip {
+            margin-top: 14px; padding-top: 14px;
+            display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+        }
+        .sidebar .user-chip .avatar { margin-bottom: 0; }
+        .sidebar .user-chip button { margin-top: 0; width: auto; padding: 6px 14px; margin-left: auto; }
+        .main { padding: 22px 16px 40px; }
+        .greeting { flex-direction: column; align-items: flex-start; gap: 10px; }
+    }
+</style>
+</head>
+<body>
+
+<div class="layout">
+
+    <!-- ============ SIDEBAR ============ -->
+    <aside class="sidebar">
+        <div class="brand">
+            <span class="icon">🔧</span>
+            <div>
+                Smart Plumbing
+                <small>Customer Portal</small>
+            </div>
+        </div>
+
+        <nav>
+            <div class="section-label">Main</div>
+            <a class="nav-link active" data-tab="overview"><span class="ico">📊</span> Overview</a>
+            <a class="nav-link" data-tab="new"><span class="ico">➕</span> Report Issue</a>
+            <a class="nav-link" data-tab="jobs"><span class="ico">📋</span> My Jobs</a>
+
+            <div class="section-label">History</div>
+            <a class="nav-link" data-tab="completed"><span class="ico">✅</span> Completed</a>
+        </nav>
+
+        <div class="user-chip">
+            <div class="avatar" id="avatar">U</div>
+            <strong id="userName">User</strong>
+            <span class="email" id="userEmail">—</span>
+            <button onclick="logout()">Logout</button>
+        </div>
+    </aside>
+
+    <!-- ============ MAIN ============ -->
+    <main class="main">
+
+        <div class="greeting">
+            <div>
+                <h1>Hello, <span id="greetName">User</span>! 👋</h1>
+                <p>Need a plumber? Describe your issue and we'll match you instantly.</p>
+            </div>
+            <div class="greeting-date" id="greetDate">—</div>
+        </div>
+
+        <!-- Overview -->
+        <section class="tab-content active" id="tab-overview">
+            <div class="page-header">
+                <div>
+                    <h1>Overview</h1>
+                    <p>Your plumbing service activity</p>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card"><div class="label">Total Requests</div><div class="value" id="statTotal">—</div></div>
+                <div class="stat-card"><div class="label">Pending</div><div class="value" id="statPending">—</div></div>
+                <div class="stat-card"><div class="label">In Progress</div><div class="value" id="statProgress">—</div></div>
+                <div class="stat-card"><div class="label">Completed</div><div class="value accent" id="statCompleted">—</div></div>
+            </div>
+        </section>
+
+        <!-- Report Issue -->
+        <section class="tab-content" id="tab-new">
+            <div class="page-header">
+                <div>
+                    <h1>Report a Plumbing Issue</h1>
+                    <p>Describe the problem — our AI will match you with the best plumber</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <form class="issue-form" id="issueForm">
+                    <label>Your Location</label>
+                    <input type="text" name="location" required
+                           placeholder="e.g. Westlands, Nairobi — or your estate / street">
+
+                    <label>Describe your issue</label>
+                    <textarea name="description"
+                        placeholder="Example: My kitchen sink is blocked and water keeps backing up. It started this morning..."></textarea>
+
+                    <div class="hint">
+                        <span onclick="fillHint('My kitchen sink is blocked and water is backing up')">🛑 Blocked sink</span>
+                        <span onclick="fillHint('There is a water leak under my bathroom sink dripping constantly')">💧 Leaking pipe</span>
+                        <span onclick="fillHint('I need a new shower installed in my bathroom')">🚿 New installation</span>
+                        <span onclick="fillHint('My water heater is not producing hot water')">🔥 Water heater</span>
+                    </div>
+
+                    <div class="modal-actions" style="justify-content:flex-start;margin-top:18px">
+                        <button type="submit" class="btn btn-primary" id="submitBtn">✨ Find Me a Plumber</button>
+                    </div>
+
+                    <div id="matchResult"></div>
+                </form>
+            </div>
+        </section>
+
+        <!-- My Jobs -->
+        <section class="tab-content" id="tab-jobs">
+            <div class="page-header">
+                <div>
+                    <h1>My Jobs</h1>
+                    <p>All your plumbing requests</p>
+                </div>
+                <button class="btn btn-ghost" onclick="loadJobs()">🔄 Refresh</button>
+            </div>
+
+            <div class="card">
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Issue / Location</th>
+                                <th>Category</th>
+                                <th>Plumber</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="jobsTable"></tbody>
+                    </table>
+                </div>
+                <div class="empty" id="jobsEmpty" style="display:none">
+                    <div class="big">📋</div>
+                    No jobs yet. Report an issue to get started.
+                </div>
+            </div>
+        </section>
+
+        <!-- Completed -->
+        <section class="tab-content" id="tab-completed">
+            <div class="page-header">
+                <div>
+                    <h1>Completed Jobs</h1>
+                    <p>Rate your plumbers and leave a comment</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Plumber</th>
+                                <th>Category</th>
+                                <th>Location</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="completedTable"></tbody>
+                    </table>
+                </div>
+                <div class="empty" id="completedEmpty" style="display:none">
+                    <div class="big">✅</div>
+                    No completed jobs yet.
+                </div>
+            </div>
+        </section>
+
+    </main>
+</div>
+
+<!-- ============ REVIEW MODAL ============ -->
+<div class="modal-backdrop" id="reviewModal">
+    <div class="modal">
+        <h2>Rate Your Plumber</h2>
+
+        <p style="color:#64748b;font-size:0.9rem;margin-bottom:4px">
+            How was <strong id="reviewPlumberName">the plumber</strong>?
+        </p>
+
+        <label>Your Rating</label>
+        <div class="star-pick" id="starPick">
+            <span data-star="1">★</span>
+            <span data-star="2">★</span>
+            <span data-star="3">★</span>
+            <span data-star="4">★</span>
+            <span data-star="5">★</span>
+        </div>
+
+        <label>Comment (optional)</label>
+        <input type="text" id="reviewComment" placeholder="Great service, fast, friendly...">
+
+        <div class="modal-actions">
+            <button class="btn btn-ghost" onclick="closeReviewModal()">Cancel</button>
+            <button class="btn btn-primary" onclick="submitReview()">Submit Review</button>
+        </div>
+    </div>
+</div>
+
+<!-- ============ PAY MODAL ============ -->
+<div class="modal-backdrop" id="payModal">
+    <div class="modal" style="max-width:420px">
+        <h2>Pay for Job</h2>
+
+        <div style="background:#f0fdfa;border:1px solid #ccfbf1;border-radius:12px;padding:16px;margin-bottom:14px">
+            <div style="font-size:0.78rem;color:#0d9488;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px">
+                Amount Due
+            </div>
+            <div style="font-size:1.8rem;font-weight:700;color:#0d9488">KSh 1000</div>
+        </div>
+
+        <p style="color:#64748b;font-size:0.88rem;margin-bottom:12px">
+            You'll receive an M-Pesa prompt on your phone.
+        </p>
+
+        <label>M-Pesa Phone Number</label>
+        <input type="tel" id="payPhone" placeholder="0712345678" pattern="[0-9]{10,13}">
+        <input type="hidden" id="payJobId">
+
+        <div class="modal-actions">
+            <button class="btn btn-ghost" onclick="closePayModal()">Cancel</button>
+            <button class="btn btn-primary" onclick="submitPayment()">📱 Send STK Push</button>
+        </div>
+    </div>
+</div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script>
+/* ============================================
+   HELPERS
+   ============================================ */
+function toast(msg, type = 'info') {
+    const wrap = document.getElementById('toastWrap');
+    const t = document.createElement('div');
+    t.className = 'toast ' + type;
+    t.textContent = msg;
+    wrap.appendChild(t);
+    setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, 3500);
+}
+
+async function api(endpoint, options = {}) {
+    const res = await fetch(endpoint, { credentials: 'same-origin', ...options });
+    try { return await res.json(); }
+    catch { return { success: false, message: 'Invalid server response' }; }
+}
+
+function esc(s) {
+    return String(s == null ? '' : s)
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+        .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function fmtDate(d) {
+    if (!d) return '—';
+    const dt = new Date(d.replace(' ', 'T'));
+    return dt.toLocaleString('en-KE', {
+        day:'2-digit', month:'short', year:'numeric',
+        hour:'2-digit', minute:'2-digit'
+    });
+}
+
+function fillHint(text) {
+    document.querySelector('#issueForm textarea').value = text;
+    document.querySelector('#issueForm textarea').focus();
+}
+
+/* ============================================
+   AUTH
+   ============================================ */
+async function loadUser() {
+    const data = await api('auth.php?action=me');
+    if (!data.success || data.role !== 'user') {
+        window.location.href = 'login.html';
+        return false;
+    }
+    document.getElementById('userName').textContent = data.name;
+    document.getElementById('userEmail').textContent = data.email || '';
+    document.getElementById('avatar').textContent = (data.name || 'U').charAt(0).toUpperCase();
+    return true;
+}
+
+async function logout() {
+    await api('auth.php?action=logout');
+    window.location.href = 'index.html';
+}
+
+/* ============================================
+   TABS
+   ============================================ */
+document.querySelectorAll('.nav-link').forEach(link => {
+    link.addEventListener('click', () => {
+        const tab = link.dataset.tab;
+        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        link.classList.add('active');
+        document.getElementById('tab-' + tab).classList.add('active');
+
+        if (tab === 'overview')  loadStats();
+        if (tab === 'jobs')      loadJobs();
+        if (tab === 'completed') loadCompleted();
+    });
+});
+
+/* ============================================
+   OVERVIEW STATS
+   ============================================ */
+async function loadStats() {
+    const data = await api('jobs.php?action=list');
+    if (!data.success) return;
+    const jobs = data.jobs || [];
+
+    document.getElementById('statTotal').textContent     = jobs.length;
+    document.getElementById('statPending').textContent   = jobs.filter(j => j.status === 'pending' || j.status === 'accepted').length;
+    document.getElementById('statProgress').textContent  = jobs.filter(j => j.status === 'paid').length;
+    document.getElementById('statCompleted').textContent = jobs.filter(j => j.status === 'completed').length;
+}
+
+/* ============================================
+   AI MATCHING FLOW — visual stages
+   ============================================ */
+function guessCategory(text) {
+    const t = text.toLowerCase();
+    if (/leak|drip|burst|wet|faucet|tap/.test(t)) return 'leak';
+    if (/block|clog|drain|backup|overflow|sink|toilet/.test(t)) return 'blockage';
+    if (/install|fit|new|replace|connect|renovate/.test(t)) return 'installation';
+    if (/heater|hot water|geyser|boiler|thermostat/.test(t)) return 'heater';
+    return 'general';
+}
+
+function aiStageScanning() {
+    return `
+        <div class="ai-stage">
+            <div class="ai-scan-wrap">
+                <div class="ai-scan-core">🤖</div>
+                <div class="ai-scan-ring r1"></div>
+                <div class="ai-scan-ring r2"></div>
+                <div class="ai-scan-ring r3"></div>
+            </div>
+            <h3>AI is analysing your issue...</h3>
+            <p class="ai-status">Reading description<span class="ai-dots"></span></p>
+            <div class="ai-progress"><div class="ai-progress-fill" style="--dur:1.8s"></div></div>
+        </div>
+    `;
+}
+
+function aiStageAnalyzing(category) {
+    const categories = [
+        { key: 'leak',         label: '💧 Leak Repair' },
+        { key: 'blockage',     label: '🛑 Drainage / Blockage' },
+        { key: 'installation', label: '🚿 Installation' },
+        { key: 'heater',       label: '🔥 Water Heater' },
+        { key: 'general',      label: '🔧 General Plumbing' }
+    ];
+    const rows = categories.map(c => `
+        <div class="ai-cat-row">
+            <span class="ai-cat-label">${c.label}</span>
+            <span class="ai-cat-check ${c.key === category ? 'on' : ''}">
+                ${c.key === category ? '✓' : '·'}
+            </span>
+        </div>
+    `).join('');
+
+    return `
+        <div class="ai-stage">
+            <div class="ai-icon-pulse">🧠</div>
+            <h3>Classifying the problem</h3>
+            <p class="ai-status">Cross-referencing 5 categories</p>
+            <div class="ai-cat-list">${rows}</div>
+        </div>
+    `;
+}
+
+function aiStageScoring() {
+    return `
+        <div class="ai-stage">
+            <div class="ai-icon-spin">⚙️</div>
+            <h3>Scoring available plumbers</h3>
+            <p class="ai-status">Comparing specialty · level · rating</p>
+            <div class="ai-score-rows">
+                <div class="ai-score-row"><span>Specialty match</span><div class="ai-score-bar"><i style="--w:40%"></i></div><b>40%</b></div>
+                <div class="ai-score-row"><span>Skill level</span><div class="ai-score-bar"><i style="--w:30%"></i></div><b>30%</b></div>
+                <div class="ai-score-row"><span>Rating</span><div class="ai-score-bar"><i style="--w:20%"></i></div><b>20%</b></div>
+                <div class="ai-score-row"><span>Availability</span><div class="ai-score-bar"><i style="--w:10%"></i></div><b>10%</b></div>
+            </div>
+        </div>
+    `;
+}
+
+function aiStageMatched(plumberName, category, location) {
+    const initial = (plumberName || 'P').charAt(0).toUpperCase();
+    return `
+        <div class="ai-stage ai-stage-success">
+            <div class="ai-match-badge">✨ Best Match Found</div>
+            <div class="ai-match-card">
+                <div class="ai-match-avatar">${esc(initial)}</div>
+                <div class="ai-match-info">
+                    <div class="ai-match-name">${esc(plumberName)}</div>
+                    <div class="ai-match-meta">
+                        <span>🛠️ ${esc(category)}</span>
+                        <span>📍 ${esc(location)}</span>
+                    </div>
+                </div>
+                <div class="ai-match-tick">✓</div>
+            </div>
+            <p class="ai-status">Sending request to ${esc(plumberName)}<span class="ai-dots"></span></p>
+        </div>
+    `;
+}
+
+function aiStageWaiting(plumberName, category, location, jobId) {
+    const tips = [
+        'Plumbers typically respond within 5 minutes.',
+        'You\'ll be notified the moment they accept.',
+        'You can pay securely via M-Pesa once accepted.',
+        'Need to cancel? Just wait or refresh the page.'
+    ];
+    const tip = tips[Math.floor(Math.random() * tips.length)];
+
+    return `
+        <div class="ai-stage ai-stage-waiting" id="aiWaitingStage">
+            <div class="ai-wait-ring"></div>
+            <h3>Request Sent</h3>
+            <p class="ai-status">Waiting for <strong>${esc(plumberName)}</strong> to accept</p>
+
+            <div class="ai-wait-card">
+                <div class="ai-wait-row"><span>🆔 Job ID</span><b>#${jobId}</b></div>
+                <div class="ai-wait-row"><span>🛠️ Category</span><b>${esc(category)}</b></div>
+                <div class="ai-wait-row"><span>📍 Location</span><b>${esc(location)}</b></div>
+                <div class="ai-wait-row"><span>💳 Amount</span><b>KSh 10 (payable after accept)</b></div>
+            </div>
+
+            <div class="ai-tip">💡 ${esc(tip)}</div>
+        </div>
+    `;
+}
+
+async function pollForAcceptance(jobId) {
+    if (!jobId) return;
+    let attempts = 0;
+    const maxAttempts = 60; // ~5 minutes
+
+    const iv = setInterval(async () => {
+        attempts++;
+        if (attempts > maxAttempts) { clearInterval(iv); return; }
+
+        const data = await api('jobs.php?action=list');
+        if (!data.success) return;
+
+        const job = (data.jobs || []).find(j => String(j.id) === String(jobId));
+        if (!job) return;
+
+        if (job.status === 'accepted') {
+            clearInterval(iv);
+            const stage = document.getElementById('aiWaitingStage');
+            if (stage) {
+                stage.innerHTML = `
+                    <div class="ai-accepted-burst">🎉</div>
+                    <h3>Accepted!</h3>
+                    <p class="ai-status"><strong>${esc(job.plumber_name || 'Your plumber')}</strong> accepted your request.</p>
+                    <div class="ai-accepted-hint">
+                        Go to <b>My Jobs</b> to pay KSh 1000 and proceed.
+                    </div>
+                `;
+            }
+            toast('Plumber accepted your request!', 'success');
+            loadJobs();
+            loadStats();
+        } else if (job.status === 'declined') {
+            clearInterval(iv);
+            const stage = document.getElementById('aiWaitingStage');
+            if (stage) {
+                stage.innerHTML = `
+                    <div class="ai-icon-error">😔</div>
+                    <h3>No plumber available</h3>
+                    <p class="ai-status">Please try again — we'll re-run the match.</p>
+                `;
+            }
+        }
+    }, 5000);
+}
+
+/* ============================================
+   SUBMIT ISSUE — with AI matching flow
+   ============================================ */
+document.getElementById('issueForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('submitBtn');
+    const locationInput = e.target.location;
+    const textarea = e.target.description;
+    const location = locationInput.value.trim();
+    const text = textarea.value.trim();
+    const result = document.getElementById('matchResult');
+
+    if (location === '') {
+        toast('Please enter your location', 'error');
+        locationInput.focus();
+        return;
+    }
+    if (text.length < 10) {
+        toast('Please describe your issue in more detail', 'error');
+        textarea.focus();
+        return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = '✨ Finding...';
+    result.innerHTML = '';
+
+    // ===== STAGE 1: AI SCANNING =====
+    result.innerHTML = aiStageScanning();
+
+    // Guess category client-side for UX
+    const guessedCategory = guessCategory(text);
+
+    // Fire API request in background
+    const apiPromise = api('jobs.php?action=create', {
+        method: 'POST',
+        body: (() => {
+            const b = new URLSearchParams();
+            b.append('description', text);
+            b.append('location', location);
+            return b;
+        })()
+    });
+
+    // Wait 1.8s on scanning stage
+    await new Promise(r => setTimeout(r, 1800));
+
+    // ===== STAGE 2: ANALYZING =====
+    result.innerHTML = aiStageAnalyzing(guessedCategory);
+    await new Promise(r => setTimeout(r, 1500));
+
+    // ===== STAGE 3: SCORING =====
+    result.innerHTML = aiStageScoring();
+    await new Promise(r => setTimeout(r, 1500));
+
+    // Now wait for API response
+    const data = await apiPromise;
+
+    if (!data.success) {
+        btn.disabled = false;
+        btn.textContent = '✨ Find Me a Plumber';
+        result.innerHTML = `
+            <div class="ai-stage ai-stage-error">
+                <div class="ai-icon-error">⚠️</div>
+                <h3>Could not find a plumber</h3>
+                <p>${esc(data.message || 'Please try again in a moment.')}</p>
+            </div>
+        `;
+        return;
+    }
+
+    // ===== STAGE 4: MATCH FOUND =====
+    result.innerHTML = aiStageMatched(data.plumber_name, data.category, location);
+    toast('Plumber matched!', 'success');
+    await new Promise(r => setTimeout(r, 2500));
+
+    // ===== STAGE 5: WAITING =====
+    result.innerHTML = aiStageWaiting(data.plumber_name, data.category, location, data.job_id);
+
+    btn.disabled = false;
+    btn.textContent = '✨ Find Me a Plumber';
+    textarea.value = '';
+    locationInput.value = '';
+    loadStats();
+
+    // Poll for acceptance
+    pollForAcceptance(data.job_id);
+});
+
+/* ============================================
+   JOBS TABLE
+   ============================================ */
+async function loadJobs() {
+    const data = await api('jobs.php?action=list');
+    if (!data.success) return;
+
+    const tbody = document.getElementById('jobsTable');
+    const empty = document.getElementById('jobsEmpty');
+
+    if (data.jobs.length === 0) {
+        tbody.innerHTML = '';
+        empty.style.display = 'block';
+        return;
+    }
+    empty.style.display = 'none';
+
+    tbody.innerHTML = data.jobs.map(j => {
+        let actions = '—';
+        if (j.status === 'accepted') {
+            actions = `<button class="btn btn-primary" onclick="openPayModal(${j.id})">💳 Pay KSh 1000</button>`;
+        } else if (j.status === 'paid') {
+            actions = `<span style="color:#64748b;font-size:0.8rem">Waiting for plumber</span>`;
+        } else if (j.status === 'completed') {
+            actions = j.reviewed == 0
+                ? `<button class="btn btn-warn" onclick="openReviewModal(${j.id}, '${esc(j.plumber_name || '')}')">⭐ Rate</button>`
+                : `<span style="color:#10b981;font-size:0.8rem">✅ Reviewed</span>`;
+        } else if (j.status === 'pending') {
+            actions = `<span style="color:#64748b;font-size:0.8rem">Awaiting plumber</span>`;
+        } else if (j.status === 'declined') {
+            actions = `<span style="color:#dc2626;font-size:0.8rem">No plumber available</span>`;
+        }
+
+        return `
+        <tr>
+            <td>#${j.id}</td>
+            <td>
+                <div>${esc((j.description || '').slice(0, 50))}${(j.description || '').length > 50 ? '…' : ''}</div>
+                <div style="font-size:0.75rem;color:#94a3b8;margin-top:2px">📍 ${esc(j.location || '—')}</div>
+            </td>
+            <td>${esc(j.ai_category || '—')}</td>
+            <td>${esc(j.plumber_name || '—')}</td>
+            <td><span class="badge ${j.status}">${j.status}</span></td>
+            <td>${fmtDate(j.created_at)}</td>
+            <td>${actions}</td>
+        </tr>
+        `;
+    }).join('');
+}
+
+/* ============================================
+   COMPLETED
+   ============================================ */
+async function loadCompleted() {
+    const data = await api('jobs.php?action=list');
+    if (!data.success) return;
+
+    const completed = data.jobs.filter(j => j.status === 'completed');
+    const tbody = document.getElementById('completedTable');
+    const empty = document.getElementById('completedEmpty');
+
+    if (completed.length === 0) {
+        tbody.innerHTML = '';
+        empty.style.display = 'block';
+        return;
+    }
+    empty.style.display = 'none';
+
+    tbody.innerHTML = completed.map(j => `
+        <tr>
+            <td>#${j.id}</td>
+            <td>${esc(j.plumber_name || '—')}</td>
+            <td>${esc(j.ai_category || '—')}</td>
+            <td>${esc(j.location || '—')}</td>
+            <td>${fmtDate(j.created_at)}</td>
+            <td>
+                ${j.reviewed == 0
+                    ? `<button class="btn btn-warn" onclick="openReviewModal(${j.id}, '${esc(j.plumber_name || '')}')">⭐ Rate</button>`
+                    : `<span style="color:#10b981;font-size:0.8rem">✅ Reviewed</span>`}
+            </td>
+        </tr>
+    `).join('');
+}
+
+/* ============================================
+   PAY MODAL — open / close
+   ============================================ */
+function openPayModal(jobId) {
+    document.getElementById('payJobId').value = jobId;
+    document.getElementById('payPhone').value = '';
+    document.getElementById('payModal').classList.add('show');
+}
+
+function closePayModal() {
+    document.getElementById('payModal').classList.remove('show');
+}
+
+/* ============================================
+   PAYMENT SEQUENCE — 3-step modal
+   ============================================ */
+function showPayRequestSent() {
+    closePayInfoModal();
+    const m = document.createElement('div');
+    m.id = 'payInfoModal';
+    m.className = 'pay-seq';
+    m.innerHTML = `
+        <div class="pay-seq-inner">
+            <div class="pay-icon-circle blue">⏳</div>
+            <h2>Payment Request Sent!</h2>
+            <p>A payment prompt has been sent to your phone. Please check your phone and enter your M-Pesa PIN to complete the payment.</p>
+            <p class="small-muted">Payment confirmation will begin shortly...</p>
+        </div>
+    `;
+    document.body.appendChild(m);
+}
+
+function showPayConfirming(seconds) {
+    closePayInfoModal();
+    const m = document.createElement('div');
+    m.id = 'payInfoModal';
+    m.className = 'pay-seq';
+    m.innerHTML = `
+        <div class="pay-seq-inner">
+            <h2>Confirming Payment</h2>
+            <p>Please wait while we confirm your payment and log you in...</p>
+            <p class="small-muted">Payment: Checking...</p>
+            <div class="pay-countdown" id="payCountdown">${seconds}s remaining</div>
+            <div class="pay-bar"><div id="payBar" style="width:100%"></div></div>
+            <div class="pay-spinner"></div>
+        </div>
+    `;
+    document.body.appendChild(m);
+
+    let remaining = seconds;
+    const bar = document.getElementById('payBar');
+    const cd  = document.getElementById('payCountdown');
+    const iv  = setInterval(() => {
+        remaining--;
+        if (cd) cd.textContent = remaining + 's remaining';
+        if (bar) bar.style.width = Math.max(0, (remaining / seconds) * 100) + '%';
+        if (remaining <= 0) clearInterval(iv);
+    }, 1000);
+}
+
+function showPaySuccess() {
+    closePayInfoModal();
+    const m = document.createElement('div');
+    m.id = 'payInfoModal';
+    m.className = 'pay-seq';
+    m.innerHTML = `
+        <div class="pay-seq-inner">
+            <div class="pay-icon-circle green">✓</div>
+            <h2>Payment Successful!</h2>
+            <p>
+                <strong style="font-size:1.3rem;color:#0d9488;">KSh 10</strong> received<br>
+                <span style="font-size:0.85rem;color:#64748b;">KSh 3.50 → plumber &nbsp;·&nbsp; KSh 6.50 → platform</span>
+            </p>
+            <p class="small-muted">Refreshing your dashboard...</p>
+        </div>
+    `;
+    document.body.appendChild(m);
+}
+
+function closePayInfoModal() {
+    const existing = document.getElementById('payInfoModal');
+    if (existing) existing.remove();
+}
+
+/* ============================================
+   SUBMIT PAYMENT — instant demo flow
+   ============================================ */
+async function submitPayment() {
+    const jobId = document.getElementById('payJobId').value;
+    const phone = document.getElementById('payPhone').value.trim();
+
+    if (!/^[0-9]{10,13}$/.test(phone)) {
+        toast('Enter a valid phone number (10–13 digits)', 'error');
+        return;
+    }
+
+    const body = new URLSearchParams();
+    body.append('job_id', jobId);
+    body.append('phone', phone);
+
+    closePayModal();
+
+    showPayRequestSent();
+    api('payments.php?action=stkpush', { method: 'POST', body });
+
+    await new Promise(r => setTimeout(r, 2000));
+
+    showPayConfirming(5);
+    await new Promise(r => setTimeout(r, 5000));
+
+    const simBody = new URLSearchParams();
+    simBody.append('job_id', jobId);
+    await api('payments.php?action=simulate', { method: 'POST', body: simBody });
+
+    showPaySuccess();
+
+    setTimeout(() => {
+        closePayInfoModal();
+        loadJobs();
+        loadStats();
+    }, 2500);
+}
+
+/* ============================================
+   REVIEW MODAL
+   ============================================ */
+let selectedRating = 0;
+
+function openReviewModal(jobId, plumberName) {
+    document.getElementById('reviewModal').dataset.jobId = jobId;
+    document.getElementById('reviewPlumberName').textContent = plumberName || 'your plumber';
+    document.getElementById('reviewComment').value = '';
+    selectedRating = 0;
+    document.querySelectorAll('#starPick span').forEach(s => s.classList.remove('on'));
+    document.getElementById('reviewModal').classList.add('show');
+}
+
+function closeReviewModal() {
+    document.getElementById('reviewModal').classList.remove('show');
+}
+
+document.querySelectorAll('#starPick span').forEach(s => {
+    s.addEventListener('click', () => {
+        selectedRating = parseInt(s.dataset.star);
+        document.querySelectorAll('#starPick span').forEach(x => {
+            x.classList.toggle('on', parseInt(x.dataset.star) <= selectedRating);
+        });
+    });
+    s.addEventListener('mouseenter', () => {
+        document.querySelectorAll('#starPick span').forEach(x => {
+            x.classList.toggle('on', parseInt(x.dataset.star) <= parseInt(s.dataset.star));
+        });
+    });
+});
+document.getElementById('starPick').addEventListener('mouseleave', () => {
+    document.querySelectorAll('#starPick span').forEach(x => {
+        x.classList.toggle('on', parseInt(x.dataset.star) <= selectedRating);
+    });
+});
+
+async function submitReview() {
+    const modal = document.getElementById('reviewModal');
+    const jobId = modal.dataset.jobId;
+    const comment = document.getElementById('reviewComment').value.trim();
+
+    if (selectedRating === 0) {
+        toast('Please select a star rating', 'error');
+        return;
+    }
+
+    const body = new URLSearchParams();
+    body.append('job_id', jobId);
+    body.append('rating', selectedRating);
+    body.append('comment', comment);
+
+    const data = await api('reviews.php?action=create', { method: 'POST', body });
+
+    if (!data.success) {
+        toast(data.message || 'Review failed', 'error');
+        return;
+    }
+
+    toast('Review submitted — thank you!', 'success');
+    closeReviewModal();
+    loadJobs();
+    loadCompleted();
+
+    // Show the receipt modal
+    if (data.receipt) {
+        showReceiptModal(data.receipt);
+    }
+}
+
+/* ============================================
+   RECEIPT MODAL — shown after review
+   ============================================ */
+function showReceiptModal(r) {
+    const modal = document.createElement('div');
+    modal.id = 'receiptModal';
+    modal.style.cssText = `
+        position: fixed; inset: 0;
+        background: rgba(15, 23, 42, 0.75);
+        display: flex; align-items: center; justify-content: center;
+        z-index: 10000; padding: 20px;
+        animation: fadeIn 0.25s ease;
+        backdrop-filter: blur(6px);
+        overflow-y: auto;
+    `;
+
+    const stars = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
+    const fmtAmount = (n) => 'KSh ' + Number(n).toLocaleString('en-KE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const fmtDateTime = (d) => {
+        if (!d) return '—';
+        const dt = new Date(d.replace(' ', 'T'));
+        return dt.toLocaleString('en-KE', {
+            day: '2-digit', month: 'short', year: 'numeric',
+            hour: '2-digit', minute: '2-digit'
+        });
+    };
+
+    modal.innerHTML = `
+        <div id="receiptContent" style="
+            background: #fff;
+            border-radius: 20px;
+            padding: 0;
+            max-width: 520px;
+            width: 100%;
+            box-shadow: 0 30px 80px rgba(15, 23, 42, 0.4);
+            animation: rise 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            overflow: hidden;
+            margin: auto;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+        ">
+            <!-- HEADER -->
+            <div style="
+                background: linear-gradient(135deg, #0a3d6b 0%, #1466ad 60%, #14b8a6 100%);
+                color: #fff;
+                padding: 36px 32px 30px;
+                text-align: center;
+                position: relative;
+                overflow: hidden;
+            ">
+                <div style="
+                    position: absolute; width: 220px; height: 220px;
+                    background: radial-gradient(circle, rgba(255,255,255,0.15), transparent 70%);
+                    top: -100px; right: -60px; pointer-events: none;
+                "></div>
+
+                <div style="
+                    display: inline-flex; align-items: center; gap: 10px;
+                    margin-bottom: 14px;
+                    position: relative; z-index: 1;
+                ">
+                    <div style="
+                        width: 42px; height: 42px;
+                        background: rgba(255,255,255,0.18);
+                        border: 1px solid rgba(255,255,255,0.28);
+                        border-radius: 12px;
+                        display: flex; align-items: center; justify-content: center;
+                        font-size: 22px;
+                    ">🔧</div>
+                    <div style="
+                        font-size: 1.5rem; font-weight: 800;
+                        letter-spacing: -0.02em;
+                    ">Smart Plumbing System</div>
+                </div>
+
+                <div style="
+                    font-size: 0.85rem; opacity: 0.92;
+                    letter-spacing: 0.12em;
+                    text-transform: uppercase;
+                    font-weight: 600;
+                    margin-bottom: 20px;
+                    position: relative; z-index: 1;
+                ">Payment Receipt</div>
+
+                <div style="
+                    display: inline-block;
+                    background: rgba(255,255,255,0.18);
+                    border: 1px solid rgba(255,255,255,0.28);
+                    padding: 6px 16px;
+                    border-radius: 999px;
+                    font-size: 0.78rem;
+                    font-weight: 700;
+                    letter-spacing: 0.08em;
+                    font-family: 'Courier New', monospace;
+                    position: relative; z-index: 1;
+                ">${r.receipt_number}</div>
+            </div>
+
+            <!-- AMOUNT -->
+            <div style="
+                padding: 24px 32px;
+                text-align: center;
+                border-bottom: 1px dashed #e2e8f0;
+            ">
+                <div style="
+                    font-size: 0.75rem; color: #64748b;
+                    text-transform: uppercase; letter-spacing: 0.08em;
+                    font-weight: 700; margin-bottom: 6px;
+                ">Amount Paid</div>
+                <div style="
+                    font-size: 2.4rem; font-weight: 800;
+                    color: #0d9488; letter-spacing: -0.03em;
+                    background: linear-gradient(135deg, #0d9488, #14b8a6);
+                    -webkit-background-clip: text;
+                    -webkit-text-fill-color: transparent;
+                    background-clip: text;
+                    margin-bottom: 6px;
+                ">${fmtAmount(r.amount)}</div>
+                <div style="
+                    display: inline-flex; gap: 8px; flex-wrap: wrap;
+                    justify-content: center;
+                    font-size: 0.8rem; color: #64748b;
+                ">
+                    <span style="
+                        background: #ecfdf5; border: 1px solid #a7f3d0;
+                        color: #065f46; padding: 3px 10px;
+                        border-radius: 999px; font-weight: 600;
+                    ">✓ Plumber: ${fmtAmount(r.plumber_share)}</span>
+                    <span style="
+                        background: #e0f2fe; border: 1px solid #bae6fd;
+                        color: #075985; padding: 3px 10px;
+                        border-radius: 999px; font-weight: 600;
+                    ">✓ Platform: ${fmtAmount(r.admin_share)}</span>
+                </div>
+            </div>
+
+            <!-- DETAILS -->
+            <div style="padding: 24px 32px;">
+                <div style="
+                    font-size: 0.78rem; font-weight: 700;
+                    color: #64748b; text-transform: uppercase;
+                    letter-spacing: 0.06em; margin-bottom: 14px;
+                ">Transaction Details</div>
+
+                <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
+                    <tr>
+                        <td style="padding: 8px 0; color: #64748b;">Customer</td>
+                        <td style="padding: 8px 0; text-align: right; font-weight: 600; color: #0f172a;">${esc(r.customer_name)}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px 0; color: #64748b;">Plumber</td>
+                        <td style="padding: 8px 0; text-align: right; font-weight: 600; color: #0f172a;">${esc(r.plumber_name)}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px 0; color: #64748b;">Service</td>
+                        <td style="padding: 8px 0; text-align: right; font-weight: 600; color: #0f172a; text-transform: capitalize;">${esc(r.ai_category)}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px 0; color: #64748b;">Location</td>
+                        <td style="padding: 8px 0; text-align: right; font-weight: 600; color: #0f172a;">${esc(r.location)}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px 0; color: #64748b;">M-Pesa Code</td>
+                        <td style="padding: 8px 0; text-align: right; font-weight: 700; color: #0d9488; font-family: 'Courier New', monospace;">${esc(r.mpesa_receipt || '—')}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px 0; color: #64748b;">Paid On</td>
+                        <td style="padding: 8px 0; text-align: right; font-weight: 600; color: #0f172a;">${fmtDateTime(r.paid_at || r.created_at)}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px 0; color: #64748b;">Job ID</td>
+                        <td style="padding: 8px 0; text-align: right; font-weight: 600; color: #0f172a;">#${r.job_id}</td>
+                    </tr>
+                </table>
+
+                <div style="
+                    margin-top: 20px; padding-top: 20px;
+                    border-top: 1px dashed #e2e8f0;
+                ">
+                    <div style="
+                        font-size: 0.78rem; font-weight: 700;
+                        color: #64748b; text-transform: uppercase;
+                        letter-spacing: 0.06em; margin-bottom: 12px;
+                    ">Your Rating</div>
+
+                    <div style="
+                        display: flex; align-items: center;
+                        justify-content: space-between;
+                        background: #fffbeb;
+                        border: 1px solid #fef3c7;
+                        border-radius: 12px;
+                        padding: 12px 16px;
+                        margin-bottom: ${r.comment ? '12px' : '0'};
+                    ">
+                        <span style="font-size: 0.9rem; color: #92400e; font-weight: 600;">Rating given</span>
+                        <span style="font-size: 1.2rem; color: #f59e0b; letter-spacing: 3px;">${stars}</span>
+                    </div>
+
+                    ${r.comment ? `
+                        <div style="
+                            background: #f8fafc;
+                            border-left: 3px solid #14b8a6;
+                            border-radius: 8px;
+                            padding: 12px 16px;
+                            font-size: 0.9rem;
+                            color: #334155;
+                            font-style: italic;
+                            line-height: 1.6;
+                        ">"${esc(r.comment)}"</div>
+                    ` : ''}
+                </div>
+            </div>
+
+            <!-- FOOTER -->
+            <div style="
+                padding: 20px 32px 28px;
+                background: #f8fafc;
+                border-top: 1px solid #e2e8f0;
+                text-align: center;
+            ">
+                <p style="
+                    font-size: 0.85rem; color: #334155;
+                    font-weight: 600; margin-bottom: 8px;
+                ">
+                    Thank you for using Smart Plumbing! 🔧
+                </p>
+                <p style="
+                    font-size: 0.78rem; color: #64748b;
+                    margin-bottom: 16px; line-height: 1.55;
+                ">
+                    Questions? Contact us at<br>
+                    <strong style="color: #0d9488;">support@smartplumbing.co.ke</strong><br>
+                    <strong style="color: #0d9488;">+254 700 000 000</strong>
+                </p>
+
+                <div style="
+                    display: flex; gap: 10px;
+                    justify-content: center; flex-wrap: wrap;
+                ">
+                    <button onclick="printReceipt()" style="
+                        background: linear-gradient(135deg, #1466ad, #1e7fd1);
+                        color: #fff; border: none;
+                        padding: 11px 22px; border-radius: 9px;
+                        font-weight: 700; font-size: 0.88rem;
+                        cursor: pointer; font-family: inherit;
+                        box-shadow: 0 6px 16px rgba(20,102,173,0.28);
+                        transition: all 0.2s ease;
+                    ">🖨️ Print / Save PDF</button>
+
+                    <button onclick="closeReceiptModal()" style="
+                        background: #fff;
+                        color: #334155;
+                        border: 1.5px solid #e2e8f0;
+                        padding: 11px 22px; border-radius: 9px;
+                        font-weight: 700; font-size: 0.88rem;
+                        cursor: pointer; font-family: inherit;
+                        transition: all 0.2s ease;
+                    ">Close</button>
+                </div>
+
+                <div style="
+                    margin-top: 16px;
+                    font-size: 0.7rem;
+                    color: #94a3b8;
+                    letter-spacing: 0.06em;
+                ">Generated on ${new Date().toLocaleString('en-KE')}</div>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    // Close on backdrop click
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeReceiptModal();
+    });
+}
+
+function closeReceiptModal() {
+    const m = document.getElementById('receiptModal');
+    if (m) m.remove();
+}
+
+function printReceipt() {
+    const content = document.getElementById('receiptContent');
+    if (!content) return;
+
+    const printWindow = window.open('', '', 'width=800,height=900');
+    printWindow.document.write(`
+        <html>
+        <head>
+            <title>Smart Plumbing Receipt</title>
+            <style>
+                body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 20px; background: #fff; }
+                @media print { @page { margin: 10mm; } }
+            </style>
+        </head>
+        <body>${content.outerHTML}</body>
+        </html>
+    `);
+    printWindow.document.close();
+
+    printWindow.onload = () => {
+        printWindow.focus();
+        printWindow.print();
+    };
+}
+
+/* ============================================
+   INIT
+   ============================================ */
+(async function init() {
+    const ok = await loadUser();
+    if (!ok) return;
+
+    const name = document.getElementById('userName').textContent || 'User';
+    document.getElementById('greetName').textContent = name;
+
+    const now = new Date();
+    document.getElementById('greetDate').textContent =
+        now.toLocaleDateString('en-KE', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+
+    loadStats();
+})();
+</script>
+
+</body>
+</html>

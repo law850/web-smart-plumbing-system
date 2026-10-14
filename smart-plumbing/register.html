@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Register — Smart Plumbing</title>
+<style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 30px 20px;
+        background:
+            radial-gradient(circle at 15% 20%, rgba(20, 102, 173, 0.15), transparent 45%),
+            radial-gradient(circle at 85% 80%, rgba(20, 184, 166, 0.15), transparent 45%),
+            linear-gradient(135deg, #e8f0fa 0%, #f4f8fc 100%);
+        overflow: hidden;
+        position: relative;
+    }
+
+    body::before, body::after {
+        content: '';
+        position: absolute;
+        border-radius: 50%;
+        background: linear-gradient(135deg, rgba(20,102,173,0.10), rgba(20,184,166,0.10));
+        animation: float 12s ease-in-out infinite;
+    }
+    body::before { width: 260px; height: 260px; top: -80px; left: -80px; }
+    body::after  { width: 340px; height: 340px; bottom: -120px; right: -120px; animation-delay: 3s; }
+
+    @keyframes float {
+        0%, 100% { transform: translate(0, 0) scale(1); }
+        50%      { transform: translate(30px, -20px) scale(1.08); }
+    }
+
+    .register-box {
+        position: relative;
+        z-index: 1;
+        background: rgba(255, 255, 255, 0.92);
+        backdrop-filter: blur(14px);
+        padding: 40px 38px;
+        border-radius: 20px;
+        box-shadow:
+            0 10px 40px rgba(20, 102, 173, 0.12),
+            0 2px 8px rgba(0, 0, 0, 0.04);
+        width: 100%;
+        max-width: 420px;
+        border: 1px solid rgba(255, 255, 255, 0.6);
+        animation: rise 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        max-height: 95vh;
+        overflow-y: auto;
+    }
+
+    @keyframes rise {
+        from { opacity: 0; transform: translateY(20px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .logo-badge {
+        width: 56px;
+        height: 56px;
+        margin: 0 auto 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #1466ad 0%, #1e7fd1 100%);
+        border-radius: 16px;
+        font-size: 28px;
+        box-shadow: 0 6px 18px rgba(20, 102, 173, 0.35);
+    }
+
+    h1 {
+        font-size: 24px;
+        color: #0f172a;
+        text-align: center;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        margin-bottom: 6px;
+    }
+
+    .subtitle {
+        text-align: center;
+        color: #64748b;
+        font-size: 14px;
+        margin-bottom: 24px;
+    }
+
+    label {
+        display: block;
+        font-size: 13px;
+        font-weight: 600;
+        color: #334155;
+        margin-bottom: 6px;
+        margin-top: 14px;
+    }
+
+    .input-wrap { position: relative; }
+
+    .input-wrap .icon {
+        position: absolute;
+        left: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 15px;
+        opacity: 0.55;
+        pointer-events: none;
+    }
+
+    input {
+        width: 100%;
+        padding: 12px 14px 12px 42px;
+        border: 1.5px solid #e2e8f0;
+        background: #f8fafc;
+        border-radius: 10px;
+        font-size: 14px;
+        color: #0f172a;
+        transition: all 0.2s ease;
+    }
+
+    input:focus {
+        outline: none;
+        border-color: #1466ad;
+        background: #fff;
+        box-shadow: 0 0 0 4px rgba(20, 102, 173, 0.10);
+    }
+
+    input::placeholder { color: #94a3b8; }
+
+    button {
+        width: 100%;
+        background: linear-gradient(135deg, #1466ad 0%, #1e7fd1 100%);
+        color: #fff;
+        padding: 13px;
+        border: none;
+        border-radius: 10px;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        margin-top: 22px;
+        box-shadow: 0 6px 16px rgba(20, 102, 173, 0.28);
+        transition: all 0.2s ease;
+        letter-spacing: 0.02em;
+    }
+
+    button:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 10px 22px rgba(20, 102, 173, 0.36);
+    }
+
+    button:active { transform: translateY(0); }
+
+    #registerMsg {
+        font-size: 13px;
+        text-align: center;
+        margin-top: 12px;
+        min-height: 18px;
+    }
+
+    .divider {
+        display: flex;
+        align-items: center;
+        margin: 22px 0 16px;
+        color: #cbd5e1;
+        font-size: 12px;
+    }
+    .divider::before,
+    .divider::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: #e2e8f0;
+    }
+    .divider span { padding: 0 12px; color: #94a3b8; }
+
+    .bottom-text {
+        text-align: center;
+        font-size: 14px;
+        color: #64748b;
+    }
+
+    .bottom-text a {
+        color: #1466ad;
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+    .bottom-text a:hover { text-decoration: underline; }
+
+    .note {
+        text-align: center;
+        font-size: 12px;
+        color: #94a3b8;
+        margin-top: 14px;
+        line-height: 1.5;
+    }
+</style>
+</head>
+<body>
+
+<div class="register-box">
+
+    <div class="logo-badge">🔧</div>
+
+    <h1>Create Account</h1>
+    <p class="subtitle">Join Smart Plumbing in seconds</p>
+
+    <form id="registerForm">
+
+        <label>Full Name</label>
+        <div class="input-wrap">
+            <span class="icon">👤</span>
+            <input type="text" name="name" required placeholder="john paul">
+        </div>
+
+        <label>Email</label>
+        <div class="input-wrap">
+            <span class="icon">✉️</span>
+            <input type="email" name="email" required placeholder="you@example.com">
+        </div>
+
+        <label>Phone (M-Pesa)</label>
+        <div class="input-wrap">
+            <span class="icon">📱</span>
+            <input type="tel" name="phone" required placeholder="0712345678"
+                   pattern="[0-9]{10,13}" title="10–13 digits">
+        </div>
+
+        <label>Password</label>
+        <div class="input-wrap">
+            <span class="icon">🔒</span>
+            <input type="password" name="password" required minlength="6"
+                   placeholder="At least 6 characters">
+        </div>
+
+        <button type="submit">Create Account</button>
+
+        <p id="registerMsg"></p>
+
+    </form>
+
+    <div class="divider"><span>OR</span></div>
+
+    <p class="bottom-text">
+        Already have an account? <a href="login.html">Log in</a>
+    </p>
+
+    <p class="note">
+        🔒 Plumbers cannot self-register — accounts are created by the admin only.
+    </p>
+
+</div>
+
+<script>
+document.getElementById('registerForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const msg = document.getElementById('registerMsg');
+    msg.textContent = 'Creating your account...';
+    msg.style.color = '#64748b';
+
+    const form = e.target;
+    const body = new URLSearchParams();
+    body.append('name', form.name.value);
+    body.append('email', form.email.value);
+    body.append('phone', form.phone.value);
+    body.append('password', form.password.value);
+
+    try {
+        const res = await fetch('auth.php?action=register', {
+            method: 'POST',
+            body: body
+        });
+        const data = await res.json();
+
+        if (!data.success) {
+            msg.textContent = data.message || 'Registration failed';
+            msg.style.color = '#ef4444';
+            return;
+        }
+
+        msg.textContent = '✓ Account created! Redirecting to login...';
+        msg.style.color = '#10b981';
+
+        setTimeout(() => { window.location.href = 'login.html'; }, 1400);
+
+    } catch (err) {
+        msg.textContent = 'Network error: ' + err.message;
+        msg.style.color = '#ef4444';
+    }
+});
+</script>
+
+</body>
+</html>
