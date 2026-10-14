@@ -1,0 +1,22 @@
+# Environment secrets
+.env
+
+# Logs
+*.log
+mpesa_log.txt
+
+# Database dumps (schema only, personal data ignored)
+*.sql
+!smart_plumbing.sql
+
+# System files
+.DS_Store
+Thumbs.db
+__MACOSX/
+
+# IDE
+.vscode/
+.idea/
+
+# Uploads
+uploads/
